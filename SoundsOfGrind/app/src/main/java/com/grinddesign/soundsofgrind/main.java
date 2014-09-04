@@ -38,7 +38,7 @@ public class main extends Activity implements MediaPlayer.OnPreparedListener {
     boolean mActivityResumed;
     boolean mPrepared;
     int mAudioPosition;
-    Context context;
+    int [] resID = {R.raw.blackmail, R.raw.die_dead_enough, R.raw.kick_the_chair, R.raw.scorpion, R.raw.tears_in_a_vial};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,10 +89,12 @@ public class main extends Activity implements MediaPlayer.OnPreparedListener {
                 mPlayer.pause();
                 prev.setEnabled(false);
                 next.setEnabled(false);
+                pause.setText("Resume");
             } else {
                 prev.setEnabled(true);
                 next.setEnabled(true);
                 mPlayer.start();
+                pause.setText("Pause");
 
             }
         }
@@ -101,12 +103,14 @@ public class main extends Activity implements MediaPlayer.OnPreparedListener {
     View.OnClickListener stopClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            onStop();
             play.setEnabled(true);
             pause.setEnabled(false);
             stop.setEnabled(false);
             prev.setEnabled(false);
             next.setEnabled(false);
+            mPlayer.stop();
+            mPrepared = false;
+            mPlayer.release();
         }
     };
 
@@ -114,6 +118,7 @@ public class main extends Activity implements MediaPlayer.OnPreparedListener {
         @Override
         public void onClick(View v) {
             mAudioPosition--;
+            mPlayer = MediaPlayer.create(main.this, resID[mAudioPosition]);
             mPlayer.start();
         }
     };
@@ -122,6 +127,7 @@ public class main extends Activity implements MediaPlayer.OnPreparedListener {
         @Override
         public void onClick(View v) {
             mAudioPosition++;
+            mPlayer = MediaPlayer.create(main.this, resID[mAudioPosition]);
             mPlayer.start();
         }
     };
@@ -129,24 +135,19 @@ public class main extends Activity implements MediaPlayer.OnPreparedListener {
 
     protected void play() {
         Log.i("test", "playMain");
+        mAudioPosition = 0;
+        mPlayer = new MediaPlayer();
+        mPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+        mPlayer.setOnPreparedListener(main.this);
+        //Log.i("test", "play");
 
-            mPlayer = new MediaPlayer();
-            mPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-            mPlayer.setOnPreparedListener(main.this);
-            //Log.i("test", "play");
+        Log.i("test", "play");
 
-            try {
-                Log.i("test", "play");
-                mPlayer.setDataSource(main.this, Uri.parse("android.resource://" + getPackageName() + "/raw/kick_the_chair"));
+        mPlayer = MediaPlayer.create(main.this, resID[mAudioPosition]);
+        //mPlayer.setDataSource(main.this, Uri.parse("android.resource://" + getPackageName() + "/raw/kick_the_chair"));
 
-            } catch (IOException e) {
-                e.printStackTrace();
-                Log.i("test", "fail");
-                mPlayer.release();
-                mPlayer = null;
-            }
-            Log.i("Test", "7");
-            onResume();
+        Log.i("Test", "7");
+        mPlayer.start();
 
 
     }
@@ -174,25 +175,6 @@ public class main extends Activity implements MediaPlayer.OnPreparedListener {
         }
 
         Log.i("Test", "8");
-    }
-
-    @Override
-    public void onPause() {
-        super .onPause();
-
-        Log.i("Test", "10");
-    }
-
-    @Override
-    public void onStop() {
-        super .onStop();
-        Log.i("Test", "11");
-        if(mPlayer != null && mPlayer.isPlaying()) {
-            mPlayer.stop();
-            mPrepared = false;
-        }
-
-        Log.i("Test", "12");
     }
 
     @Override
