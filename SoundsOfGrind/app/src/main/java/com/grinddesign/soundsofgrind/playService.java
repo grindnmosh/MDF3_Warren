@@ -16,7 +16,7 @@ import android.os.IBinder;
  */
 
 
-public class playService extends Service implements MediaPlayer.OnPreparedListener, MediaPlayer.OnErrorListener, MediaPlayer.OnCompletionListener {
+public class playService extends Service implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCompletionListener {
 
 
 
@@ -29,11 +29,6 @@ public class playService extends Service implements MediaPlayer.OnPreparedListen
     @Override
     public void onCompletion(MediaPlayer mp) {
 
-    }
-
-    @Override
-    public boolean onError(MediaPlayer mp, int what, int extra) {
-        return false;
     }
 
     @Override

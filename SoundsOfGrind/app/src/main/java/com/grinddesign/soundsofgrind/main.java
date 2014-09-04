@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.Button;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
 
 /**
  * Author:  Robert Warren
@@ -25,7 +26,7 @@ import java.io.IOException;
  */
 
 
-public class main extends Activity implements MediaPlayer.OnPreparedListener {
+public class main extends Activity implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCompletionListener {
 
     private static final String SAVED = "MainActivity.SAVE";
 
@@ -39,6 +40,7 @@ public class main extends Activity implements MediaPlayer.OnPreparedListener {
     boolean mPrepared;
     int mAudioPosition;
     int [] resID = {R.raw.blackmail, R.raw.die_dead_enough, R.raw.kick_the_chair, R.raw.scorpion, R.raw.tears_in_a_vial};
+    String[] stringArray = new String[]{"/raw/blackmail", "/raw/die_dead_enough", "/raw/kick_the_chair", "/raw/scorpion", "/raw/tears in a vial"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -118,8 +120,15 @@ public class main extends Activity implements MediaPlayer.OnPreparedListener {
         @Override
         public void onClick(View v) {
             mAudioPosition--;
-            mPlayer = MediaPlayer.create(main.this, resID[mAudioPosition]);
-            mPlayer.start();
+            mPlayer = new MediaPlayer();
+            mPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+            mPlayer.setOnPreparedListener(main.this);
+            try {
+                mPlayer.setDataSource(main.this, Uri.parse("android.resource://" + getPackageName() + stringArray[mAudioPosition]));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            mPlayer.prepareAsync();
         }
     };
 
@@ -127,8 +136,15 @@ public class main extends Activity implements MediaPlayer.OnPreparedListener {
         @Override
         public void onClick(View v) {
             mAudioPosition++;
-            mPlayer = MediaPlayer.create(main.this, resID[mAudioPosition]);
-            mPlayer.start();
+            mPlayer = new MediaPlayer();
+            mPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+            mPlayer.setOnPreparedListener(main.this);
+            try {
+                mPlayer.setDataSource(main.this, Uri.parse("android.resource://" + getPackageName() + stringArray[mAudioPosition]));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            mPlayer.prepareAsync();
         }
     };
 
@@ -139,16 +155,19 @@ public class main extends Activity implements MediaPlayer.OnPreparedListener {
         mPlayer = new MediaPlayer();
         mPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
         mPlayer.setOnPreparedListener(main.this);
-        //Log.i("test", "play");
-
+        mPlayer.setOnCompletionListener(main.this);
         Log.i("test", "play");
 
-        mPlayer = MediaPlayer.create(main.this, resID[mAudioPosition]);
-        //mPlayer.setDataSource(main.this, Uri.parse("android.resource://" + getPackageName() + "/raw/kick_the_chair"));
+
+        //mPlayer = MediaPlayer.create(main.this, resID[mAudioPosition]);
+        try {
+            mPlayer.setDataSource(main.this, Uri.parse("android.resource://" + getPackageName() + stringArray[mAudioPosition]));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         Log.i("Test", "7");
-        mPlayer.start();
-
+        mPlayer.prepareAsync();
 
     }
 
@@ -190,9 +209,22 @@ public class main extends Activity implements MediaPlayer.OnPreparedListener {
         mPrepared = true;
 
         if(mPlayer != null && mActivityResumed) {
-            mPlayer.seekTo(mAudioPosition);
             mPlayer.start();
         }
+    }
+
+    @Override
+    public void onCompletion(MediaPlayer mp) {
+        mAudioPosition++;
+        mPlayer = new MediaPlayer();
+        mPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+        mPlayer.setOnPreparedListener(main.this);
+        try {
+            mPlayer.setDataSource(main.this, Uri.parse("android.resource://" + getPackageName() + stringArray[mAudioPosition]));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        mPlayer.prepareAsync();
     }
 
 
