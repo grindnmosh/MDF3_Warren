@@ -1,19 +1,19 @@
 package com.grinddesign.soundsofgrind;
 
 import android.app.Activity;
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-
 import java.io.IOException;
-import java.lang.reflect.Array;
 
 /**
  * Author:  Robert Warren
@@ -26,7 +26,7 @@ import java.lang.reflect.Array;
  */
 
 
-public class main extends Activity implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCompletionListener {
+public class main extends Activity implements ServiceConnection {
 
     private static final String SAVED = "MainActivity.SAVE";
 
@@ -39,12 +39,17 @@ public class main extends Activity implements MediaPlayer.OnPreparedListener, Me
     boolean mActivityResumed;
     boolean mPrepared;
     int mAudioPosition;
+    playService myService;
     int [] resID = {R.raw.blackmail, R.raw.die_dead_enough, R.raw.kick_the_chair, R.raw.scorpion, R.raw.tears_in_a_vial};
     String[] stringArray = new String[]{"/raw/blackmail", "/raw/die_dead_enough", "/raw/kick_the_chair", "/raw/scorpion", "/raw/tears in a vial"};
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
+
         setContentView(R.layout.activity_main);
         mPrepared = mActivityResumed = false;
         mAudioPosition = 0;
@@ -72,104 +77,75 @@ public class main extends Activity implements MediaPlayer.OnPreparedListener, Me
         Log.i("Test", "2");
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Log.i("test", "hit 1");
+        Intent playIntent = new Intent(this, playService.class);
+        bindService(playIntent, this, Context.BIND_AUTO_CREATE);
+        Log.i("test", "hit 2");
+        startService(playIntent);
+    }
+
     View.OnClickListener playClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            play();
+            myService.play();
             play.setEnabled(false);
             pause.setEnabled(true);
             stop.setEnabled(true);
             prev.setEnabled(true);
             next.setEnabled(true);
         }
+
     };
 
     View.OnClickListener pauseClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             if(mPlayer.isPlaying()){
-                mPlayer.pause();
+                myService.onPause();
                 prev.setEnabled(false);
                 next.setEnabled(false);
                 pause.setText("Resume");
             } else {
+                myService.onResume();
                 prev.setEnabled(true);
                 next.setEnabled(true);
-                mPlayer.start();
                 pause.setText("Pause");
-
             }
+
         }
+
     };
 
     View.OnClickListener stopClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
+            myService.onStop();
             play.setEnabled(true);
             pause.setEnabled(false);
             stop.setEnabled(false);
             prev.setEnabled(false);
             next.setEnabled(false);
-            mPlayer.stop();
-            mPrepared = false;
-            mPlayer.release();
+            unbindService(main.this);
         }
     };
 
     View.OnClickListener playPrev = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            mAudioPosition--;
-            mPlayer = new MediaPlayer();
-            mPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-            mPlayer.setOnPreparedListener(main.this);
-            try {
-                mPlayer.setDataSource(main.this, Uri.parse("android.resource://" + getPackageName() + stringArray[mAudioPosition]));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            mPlayer.prepareAsync();
+            myService.onPrev();
         }
     };
 
     View.OnClickListener playNext = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            mAudioPosition++;
-            mPlayer = new MediaPlayer();
-            mPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-            mPlayer.setOnPreparedListener(main.this);
-            try {
-                mPlayer.setDataSource(main.this, Uri.parse("android.resource://" + getPackageName() + stringArray[mAudioPosition]));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            mPlayer.prepareAsync();
+            myService.onNext();
         }
     };
 
-
-    protected void play() {
-        Log.i("test", "playMain");
-        mAudioPosition = 0;
-        mPlayer = new MediaPlayer();
-        mPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-        mPlayer.setOnPreparedListener(main.this);
-        mPlayer.setOnCompletionListener(main.this);
-        Log.i("test", "play");
-
-
-        //mPlayer = MediaPlayer.create(main.this, resID[mAudioPosition]);
-        try {
-            mPlayer.setDataSource(main.this, Uri.parse("android.resource://" + getPackageName() + stringArray[mAudioPosition]));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        Log.i("Test", "7");
-        mPlayer.prepareAsync();
-
-    }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
@@ -182,50 +158,16 @@ public class main extends Activity implements MediaPlayer.OnPreparedListener, Me
     }
 
     @Override
-    public void onResume() {
-        super .onResume();
-        Log.i("Test", "7");
-        mActivityResumed = true;
-        if(mPlayer != null && !mPrepared) {
-            mPlayer.prepareAsync();
-        } else if(mPlayer != null && mPrepared) {
-            mPlayer.seekTo(mAudioPosition);
-            mPlayer.start();
-        }
-
-        Log.i("Test", "8");
+    public void onServiceConnected(ComponentName name, IBinder service) {
+        Log.i("Here I Am", "Deal With It");
+        playService.BoundServiceBinder binder = (playService.BoundServiceBinder)service;
+        myService = binder.getService();
+        myService.showToast();
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
+    public void onServiceDisconnected(ComponentName name) {
 
-        if(mPlayer != null) {
-            mPlayer.release();
-        }
-    }
-
-    public void onPrepared(MediaPlayer mp) {
-        mPrepared = true;
-
-        if(mPlayer != null && mActivityResumed) {
-            mPlayer.start();
-        }
-    }
-
-    @Override
-    public void onCompletion(MediaPlayer mp) {
-        Log.i("Am I", "Complete?");
-        mAudioPosition++;
-        mPlayer = new MediaPlayer();
-        mPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-        mPlayer.setOnPreparedListener(main.this);
-        try {
-            mPlayer.setDataSource(main.this, Uri.parse("android.resource://" + getPackageName() + stringArray[mAudioPosition]));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        mPlayer.prepareAsync();
     }
 
 
