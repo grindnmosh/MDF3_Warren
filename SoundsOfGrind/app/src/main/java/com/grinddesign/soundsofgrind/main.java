@@ -215,6 +215,7 @@ public class main extends Activity implements MediaPlayer.OnPreparedListener, Me
 
     @Override
     public void onCompletion(MediaPlayer mp) {
+        Log.i("Am I", "Complete?");
         mAudioPosition++;
         mPlayer = new MediaPlayer();
         mPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
