@@ -1,6 +1,7 @@
 package com.grinddesign.soundsofgrind;
 
 import android.app.Activity;
+import android.content.Context;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -13,6 +14,16 @@ import android.widget.Button;
 
 import java.io.IOException;
 
+/**
+ * Author:  Robert Warren
+ *
+ * Project:  MDF3
+ *
+ * Package: com.grinddesign.soundsofgrind
+ *
+ * Purpose: This is where all the action happens to actually present the application on the device screen and to direct the traffic of what needs to run and when.
+ */
+
 
 public class main extends Activity implements MediaPlayer.OnPreparedListener {
 
@@ -21,10 +32,13 @@ public class main extends Activity implements MediaPlayer.OnPreparedListener {
     Button play;
     Button pause;
     Button stop;
+    Button prev;
+    Button next;
     MediaPlayer mPlayer;
     boolean mActivityResumed;
     boolean mPrepared;
     int mAudioPosition;
+    Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,9 +55,17 @@ public class main extends Activity implements MediaPlayer.OnPreparedListener {
         play = (Button) findViewById(R.id.play);
         pause = (Button) findViewById(R.id.pause);
         stop = (Button) findViewById(R.id.stop);
+        prev = (Button) findViewById(R.id.back);
+        next = (Button) findViewById(R.id.fwd);
         play.setOnClickListener(playClick);
         pause.setOnClickListener(pauseClick);
         stop.setOnClickListener(stopClick);
+        prev.setOnClickListener(playPrev);
+        next.setOnClickListener(playNext);
+        pause.setEnabled(false);
+        stop.setEnabled(false);
+        prev.setEnabled(false);
+        next.setEnabled(false);
 
         Log.i("Test", "2");
     }
@@ -51,14 +73,28 @@ public class main extends Activity implements MediaPlayer.OnPreparedListener {
     View.OnClickListener playClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            onResume();
+            play();
+            play.setEnabled(false);
+            pause.setEnabled(true);
+            stop.setEnabled(true);
+            prev.setEnabled(true);
+            next.setEnabled(true);
         }
     };
 
     View.OnClickListener pauseClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            onPause();
+            if(mPlayer.isPlaying()){
+                mPlayer.pause();
+                prev.setEnabled(false);
+                next.setEnabled(false);
+            } else {
+                prev.setEnabled(true);
+                next.setEnabled(true);
+                mPlayer.start();
+
+            }
         }
     };
 
@@ -66,31 +102,53 @@ public class main extends Activity implements MediaPlayer.OnPreparedListener {
         @Override
         public void onClick(View v) {
             onStop();
-            onDestroy();
+            play.setEnabled(true);
+            pause.setEnabled(false);
+            stop.setEnabled(false);
+            prev.setEnabled(false);
+            next.setEnabled(false);
+        }
+    };
+
+    View.OnClickListener playPrev = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            mAudioPosition--;
+            mPlayer.start();
+        }
+    };
+
+    View.OnClickListener playNext = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            mAudioPosition++;
+            mPlayer.start();
         }
     };
 
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        Log.i("Test", "3");
+    protected void play() {
+        Log.i("test", "playMain");
 
-        if(mPlayer == null) {
             mPlayer = new MediaPlayer();
             mPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-            mPlayer.setOnPreparedListener(this);
+            mPlayer.setOnPreparedListener(main.this);
+            //Log.i("test", "play");
 
             try {
-                mPlayer.setDataSource(this, Uri.parse("android.resource://" + getPackageName() + "/raw/blackmail"));
-            } catch(IOException e) {
-                e.printStackTrace();
+                Log.i("test", "play");
+                mPlayer.setDataSource(main.this, Uri.parse("android.resource://" + getPackageName() + "/raw/kick_the_chair"));
 
+            } catch (IOException e) {
+                e.printStackTrace();
+                Log.i("test", "fail");
                 mPlayer.release();
                 mPlayer = null;
             }
-            Log.i("Test", "4");
-        }
+            Log.i("Test", "7");
+            onResume();
+
+
     }
 
     @Override
@@ -114,18 +172,14 @@ public class main extends Activity implements MediaPlayer.OnPreparedListener {
             mPlayer.seekTo(mAudioPosition);
             mPlayer.start();
         }
+
         Log.i("Test", "8");
     }
 
     @Override
     public void onPause() {
         super .onPause();
-        Log.i("Test", "9");
-        mActivityResumed = false;
 
-        if(mPlayer != null && mPlayer.isPlaying()) {
-            mPlayer.pause();
-        }
         Log.i("Test", "10");
     }
 
@@ -137,6 +191,7 @@ public class main extends Activity implements MediaPlayer.OnPreparedListener {
             mPlayer.stop();
             mPrepared = false;
         }
+
         Log.i("Test", "12");
     }
 

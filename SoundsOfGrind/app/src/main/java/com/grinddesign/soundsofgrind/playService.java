@@ -6,9 +6,18 @@ import android.media.MediaPlayer;
 import android.os.IBinder;
 
 /**
- * Created by 1LoveCyn on 9/3/14.
+ * Author:  Robert Warren
+ *
+ * Project:  MDF3
+ *
+ * Package: com.grinddesign.soundsofgrind
+ *
+ * Purpose:
  */
+
+
 public class playService extends Service implements MediaPlayer.OnPreparedListener, MediaPlayer.OnErrorListener, MediaPlayer.OnCompletionListener {
+
 
 
 
@@ -31,4 +40,6 @@ public class playService extends Service implements MediaPlayer.OnPreparedListen
     public void onPrepared(MediaPlayer mp) {
 
     }
+
+
 }
