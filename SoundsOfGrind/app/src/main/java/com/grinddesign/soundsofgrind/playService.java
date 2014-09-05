@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.IOException;
@@ -28,19 +29,15 @@ import java.io.IOException;
 
 public class playService extends Service implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCompletionListener {
 
-    Button play;
-    Button pause;
-    Button stop;
-    Button prev;
-    Button next;
+    TextView tS;
     MediaPlayer mPlayer;
     boolean mActivityResumed;
     boolean mPrepared;
     int mAudioPosition;
     Context context;
-    playService myService;
-    int [] resID = {R.raw.blackmail, R.raw.die_dead_enough, R.raw.kick_the_chair, R.raw.scorpion, R.raw.tears_in_a_vial};
+    //int [] resID = {R.raw.blackmail, R.raw.die_dead_enough, R.raw.kick_the_chair, R.raw.scorpion, R.raw.tears_in_a_vial};
     String[] stringArray = new String[]{"/raw/blackmail", "/raw/die_dead_enough", "/raw/kick_the_chair", "/raw/scorpion", "/raw/tears in a vial"};
+    String[] songNames = new String[]{"Blackmail The Universe", "Die Dead Enough", "Kick The Chair", "Scorpion", "Tears In A Vial"};
 
     public class BoundServiceBinder extends Binder {
         public playService getService() {
@@ -60,11 +57,10 @@ public class playService extends Service implements MediaPlayer.OnPreparedListen
     protected void play() {
         Log.i("test", "playMain");
         mAudioPosition = 0;
-
         mPlayer = new MediaPlayer();
         mPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
         Log.i("test", "playMain1");
-        mPlayer.setOnPreparedListener(this);
+        mPlayer.setOnPreparedListener(playService.this);
         mPlayer.setOnCompletionListener(this);
         Log.i("test", "play");
 
@@ -72,12 +68,14 @@ public class playService extends Service implements MediaPlayer.OnPreparedListen
         //mPlayer = MediaPlayer.create(main.this, resID[mAudioPosition]);
         try {
             mPlayer.setDataSource(playService.this, Uri.parse("android.resource://" + getPackageName() + stringArray[mAudioPosition]));
+            mPlayer.prepareAsync();
         } catch (IOException e) {
             e.printStackTrace();
         }
 
+
         Log.i("Test", "7");
-        mPlayer.prepareAsync();
+
 
     }
 
@@ -94,8 +92,10 @@ public class playService extends Service implements MediaPlayer.OnPreparedListen
         mActivityResumed = true;
         if(mPlayer != null && !mPrepared) {
             mPlayer.prepareAsync();
+            Log.i("kidding", "me");
         } else if(mPlayer != null && mPrepared) {
             mPlayer.seekTo(mAudioPosition);
+            Log.i("Oh My", "God");
 
             mPlayer.start();
         }
@@ -124,10 +124,8 @@ public class playService extends Service implements MediaPlayer.OnPreparedListen
     @Override
     public void onPrepared(MediaPlayer mp) {
         mPrepared = true;
+        mPlayer.start();
 
-        if(mPlayer != null && mActivityResumed) {
-            mPlayer.start();
-        }
     }
 
     public void onPrev() {
@@ -161,11 +159,14 @@ public class playService extends Service implements MediaPlayer.OnPreparedListen
     public void onCompletion(MediaPlayer mp) {
         Log.i("Am I", "Complete?");
         mAudioPosition++;
+        if (mAudioPosition < stringArray.length)
         mPlayer = new MediaPlayer();
         mPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
         mPlayer.setOnPreparedListener(playService.this);
         try {
             mPlayer.setDataSource(playService.this, Uri.parse("android.resource://" + getPackageName() + stringArray[mAudioPosition]));
+            tS.setText(songNames[mAudioPosition]);
+
         } catch (IOException e) {
             e.printStackTrace();
         }
