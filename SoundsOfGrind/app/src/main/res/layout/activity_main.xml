@@ -52,14 +52,14 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="@string/temp_tit"
         android:id="@+id/titleShot"
-        android:layout_above="@+id/pause"
         android:layout_toEndOf="@+id/play"
-        android:layout_marginBottom="149dp"
         android:layout_toStartOf="@+id/stop"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
+        android:gravity="center_vertical|center_horizontal"
+        android:layout_above="@+id/play"
         android:layout_alignRight="@+id/stop"
-        android:layout_alignEnd="@+id/stop" />
+        android:layout_alignEnd="@+id/stop"
+        android:layout_alignLeft="@+id/play"
+        android:layout_alignStart="@+id/play" />
 
     <Button
         style="?android:attr/buttonStyleSmall"
@@ -79,5 +79,41 @@
         android:layout_below="@+id/titleShot"
         android:layout_toLeftOf="@+id/fwd"
         android:layout_toStartOf="@+id/fwd" />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/imageView3"
+        android:src="@drawable/megadeth"
+        android:layout_toStartOf="@+id/back"
+        android:layout_toEndOf="@+id/play"
+        android:adjustViewBounds="false"
+        android:layout_below="@+id/textView"
+        android:layout_marginTop="67dp"
+        android:layout_alignRight="@+id/pause"
+        android:layout_alignEnd="@+id/pause"
+        android:layout_alignLeft="@+id/titleShot"
+        android:layout_alignStart="@+id/titleShot" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="MEGADETH"
+        android:id="@+id/textView2"
+        android:layout_below="@+id/imageView3"
+        android:layout_toRightOf="@+id/play"
+        android:layout_toEndOf="@+id/play" />
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="The System Has Failed"
+        android:id="@+id/textView3"
+        android:gravity="center_vertical|center_horizontal|bottom"
+        android:layout_below="@+id/textView2"
+        android:layout_alignRight="@+id/stop"
+        android:layout_alignEnd="@+id/stop" />
 
 </RelativeLayout>

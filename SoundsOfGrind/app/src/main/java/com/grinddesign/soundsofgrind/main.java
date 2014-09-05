@@ -37,14 +37,8 @@ public class main extends Activity implements ServiceConnection {
     Button stop;
     Button prev;
     Button next;
-    TextView tS;
-    //MediaPlayer mPlayer;
-    //boolean mActivityResumed;
-    //oolean mPrepared;
-    //int mAudioPosition;
+    public TextView tS;
     playService myService;
-    //int [] resID = {R.raw.blackmail, R.raw.die_dead_enough, R.raw.kick_the_chair, R.raw.scorpion, R.raw.tears_in_a_vial};
-    //String[] stringArray = new String[]{"/raw/blackmail", "/raw/die_dead_enough", "/raw/kick_the_chair", "/raw/scorpion", "/raw/tears in a vial"};
 
 
     @Override
@@ -73,6 +67,7 @@ public class main extends Activity implements ServiceConnection {
         stop.setOnClickListener(stopClick);
         prev.setOnClickListener(playPrev);
         next.setOnClickListener(playNext);
+
         pause.setEnabled(false);
         stop.setEnabled(false);
         prev.setEnabled(false);
@@ -134,7 +129,7 @@ public class main extends Activity implements ServiceConnection {
             stop.setEnabled(false);
             prev.setEnabled(false);
             next.setEnabled(false);
-            //unbindService(main.this);
+            unbindService(main.this);
         }
     };
 
