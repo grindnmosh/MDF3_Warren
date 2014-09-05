@@ -10,5 +10,7 @@
     <string name="stop">Stop</string>
     <string name="fwd">Next</string>
     <string name="bck">Prev</string>
+    <string name="band">MEGADETH</string>
+    <string name="album">The System Has Failed</string>
 
 </resources>
