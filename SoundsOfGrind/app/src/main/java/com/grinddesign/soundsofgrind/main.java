@@ -5,17 +5,14 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.media.AudioManager;
-import android.media.MediaPlayer;
-import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.ResultReceiver;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-
-import java.io.IOException;
 
 /**
  * Author:  Robert Warren
@@ -32,6 +29,9 @@ public class main extends Activity implements ServiceConnection {
 
     private static final String SAVED = "MainActivity.SAVE";
 
+    /**
+     * global variables
+     */
     Button play;
     Button pause;
     Button stop;
@@ -39,35 +39,47 @@ public class main extends Activity implements ServiceConnection {
     Button next;
     public TextView tS;
     playService myService;
-
+    playService.BoundServiceBinder binder;
+    public static final String EXTRA_RECEIVER = "main.EXTRA_RECEIVER";
+    public static final String DATA_RETURNED = "main.DATA_RETURNED";
+    public static final int RESULT_DATA_RETURNED = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
-
         setContentView(R.layout.activity_main);
-        //mPrepared = mActivityResumed = false;
-        //mAudioPosition = 0;
+
         Log.i("Test", "1");
 
-        if(savedInstanceState != null && savedInstanceState.containsKey(SAVED)) {
-            //mAudioPosition = savedInstanceState.getInt(SAVED, 0);
-        }
 
+
+
+        /**
+         * variables and listeners from the UI for the main activity
+          */
         play = (Button) findViewById(R.id.play);
         pause = (Button) findViewById(R.id.pause);
         stop = (Button) findViewById(R.id.stop);
         prev = (Button) findViewById(R.id.back);
         next = (Button) findViewById(R.id.fwd);
-        tS = (TextView)findViewById(R.id.titleShot);
+        tS = (TextView) findViewById(R.id.titleShot);
         play.setOnClickListener(playClick);
         pause.setOnClickListener(pauseClick);
         stop.setOnClickListener(stopClick);
         prev.setOnClickListener(playPrev);
         next.setOnClickListener(playNext);
 
+        /**
+         * set intent to handler in service
+         */
+        Intent intent = new Intent(this, playService.class);
+        intent.putExtra(EXTRA_RECEIVER, new DataReceiver());
+        startService(intent);
+
+        /**
+         * initial button settings for app
+         */
         pause.setEnabled(false);
         stop.setEnabled(false);
         prev.setEnabled(false);
@@ -76,6 +88,27 @@ public class main extends Activity implements ServiceConnection {
         Log.i("Test", "2");
     }
 
+    /**
+     * handler to handle returned data
+     */
+    private final Handler handleMe = new Handler();
+
+    public class DataReceiver extends ResultReceiver {
+        public DataReceiver() {
+            super(handleMe);
+        }
+
+        @Override
+        protected void onReceiveResult(int resultCode, Bundle resultData) {
+            if(resultData != null && resultData.containsKey(DATA_RETURNED)) {
+                tS.setText(resultData.getString(DATA_RETURNED, "New Song"));
+            }
+        }
+    }
+
+    /**
+     * start up song service
+     */
     @Override
     protected void onStart() {
         super.onStart();
@@ -86,6 +119,16 @@ public class main extends Activity implements ServiceConnection {
         startService(playIntent);
     }
 
+    /**
+     * title function
+     */
+    public void songTitle() {
+        tS.setText(myService.songNames[myService.mAudioPosition]);
+    }
+
+    /**
+     * play button function which changes button settings
+     */
     View.OnClickListener playClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -95,12 +138,16 @@ public class main extends Activity implements ServiceConnection {
             stop.setEnabled(true);
             prev.setEnabled(true);
             next.setEnabled(true);
-            tS.setText(myService.songNames[myService.mAudioPosition]);
+            songTitle();
+            Log.i("Here I Am", "Deal With It");
 
         }
 
     };
 
+    /**
+     * pause button function which changes button settings
+     */
     View.OnClickListener pauseClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -120,6 +167,9 @@ public class main extends Activity implements ServiceConnection {
 
     };
 
+    /**
+     * stop button function which changes button settings
+     */
     View.OnClickListener stopClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -129,70 +179,47 @@ public class main extends Activity implements ServiceConnection {
             stop.setEnabled(false);
             prev.setEnabled(false);
             next.setEnabled(false);
-            unbindService(main.this);
+
         }
     };
 
+    /**
+     * back skip button function
+     */
     View.OnClickListener playPrev = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             myService.onPrev();
-            tS.setText(myService.songNames[myService.mAudioPosition]);
-
+            songTitle();
         }
     };
 
+    /**
+     * skip forward button function
+     */
     View.OnClickListener playNext = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             myService.onNext();
-            tS.setText(myService.songNames[myService.mAudioPosition]);
-
+            songTitle();
         }
     };
 
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        Log.i("Test", "5");
-        if(myService.mPlayer != null) {
-            outState.putInt(SAVED, myService.mPlayer.getCurrentPosition());
-            Log.i("Test", "6");
-        }
-    }
-
+    /**
+     * bind service when its connected
+     */
     @Override
     public void onServiceConnected(ComponentName name, IBinder service) {
-        Log.i("Here I Am", "Deal With It");
-        playService.BoundServiceBinder binder = (playService.BoundServiceBinder)service;
+        binder = (playService.BoundServiceBinder)service;
         myService = binder.getService();
-        myService.showToast();
     }
 
+    /**
+     * unbind service when its not connected
+     */
     @Override
     public void onServiceDisconnected(ComponentName name) {
-
+        unbindService(main.this);
     }
 
-
-
-    /*@Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }*/
 }
