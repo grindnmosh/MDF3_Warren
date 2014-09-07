@@ -275,7 +275,7 @@ public class playService extends Service implements MediaPlayer.OnPreparedListen
             try {
                 mPlayer.setDataSource(playService.this, Uri.parse("android.resource://" + getPackageName() + "/" + stringArray[mAudioPosition]));
                 Intent i = new Intent("New Song");
-                onHandleIntent(i);ixed line of code I accidently deleted
+                onHandleIntent(i);
             } catch (IOException e) {
                 e.printStackTrace();
             }
