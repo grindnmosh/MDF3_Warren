@@ -162,6 +162,7 @@ public class playService extends Service implements MediaPlayer.OnPreparedListen
      * Actions taken for the prepare Async calls
      * @param mp
      */
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     @Override
     public void onPrepared(MediaPlayer mp) {
         mPrepared = true;
@@ -226,6 +227,7 @@ public class playService extends Service implements MediaPlayer.OnPreparedListen
      */
     protected void onNext() {
         if (mAudioPosition < stringArray.length - 1) {
+            Log.i("Am I", "Hitting Here?");
             mAudioPosition++;
             mPlayer.reset();
             mPlayer = new MediaPlayer();
@@ -263,10 +265,9 @@ public class playService extends Service implements MediaPlayer.OnPreparedListen
     @Override
     public void onCompletion(MediaPlayer mp) {
         if (mAudioPosition < stringArray.length - 1) {
-
             Log.i("Am I", "Complete?");
-            mPlayer.reset();
             mAudioPosition++;
+            mPlayer.reset();
             mPlayer = new MediaPlayer();
             mPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             mPlayer.setOnPreparedListener(playService.this);
@@ -274,14 +275,15 @@ public class playService extends Service implements MediaPlayer.OnPreparedListen
             try {
                 mPlayer.setDataSource(playService.this, Uri.parse("android.resource://" + getPackageName() + "/" + stringArray[mAudioPosition]));
                 Intent i = new Intent("New Song");
-                onHandleIntent(i);
+                onHandleIntent(i);ixed line of code I accidently deleted
             } catch (IOException e) {
                 e.printStackTrace();
             }
+            mPlayer.prepareAsync();
         } else {
             Log.i("Am I", "Here?");
             mAudioPosition = 0;
-            mPlayer.reset();
+            //mPlayer.reset();
             mPlayer = new MediaPlayer();
             mPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             mPlayer.setOnPreparedListener(playService.this);
