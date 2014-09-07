@@ -283,7 +283,7 @@ public class playService extends Service implements MediaPlayer.OnPreparedListen
         } else {
             Log.i("Am I", "Here?");
             mAudioPosition = 0;
-            //mPlayer.reset();
+            mPlayer.reset();
             mPlayer = new MediaPlayer();
             mPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             mPlayer.setOnPreparedListener(playService.this);
