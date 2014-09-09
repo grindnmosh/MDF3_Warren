@@ -60,7 +60,6 @@ public class main extends Activity implements ServiceConnection {
 
 
 
-
         /**
          * variables and listeners from the UI for the main activity
           */
@@ -106,13 +105,32 @@ public class main extends Activity implements ServiceConnection {
         intent.putExtra(EXTRA_RECEIVER, new DataReceiver());
         startService(intent);
 
-        /**
-         * initial button settings for app
-         */
-        pause.setEnabled(false);
-        stop.setEnabled(false);
-        prev.setEnabled(false);
-        next.setEnabled(false);
+        if(savedInstanceState != null) {
+            /**
+             * initial button settings for app
+             */
+            tS.setText(myService.songNames[myService.mAudioPosition]);
+            play.setEnabled(false);
+            pause.setEnabled(true);
+            stop.setEnabled(true);
+            prev.setEnabled(true);
+            next.setEnabled(true);
+            loop.setEnabled(true);
+        }
+        else {
+            /**
+             * initial button settings for app
+             */
+
+            play.setEnabled(true);
+            pause.setEnabled(false);
+            stop.setEnabled(false);
+            prev.setEnabled(false);
+            next.setEnabled(false);
+            loop.setEnabled(false);
+        }
+
+
 
         Log.i("Test", "2");
     }
@@ -167,7 +185,7 @@ public class main extends Activity implements ServiceConnection {
             stop.setEnabled(true);
             prev.setEnabled(true);
             next.setEnabled(true);
-            songTitle();
+            //songTitle();
             seekBar.setProgress(0);
 
             seekUpdates();
@@ -187,14 +205,14 @@ public class main extends Activity implements ServiceConnection {
                 myService.onPause();
                 prev.setEnabled(false);
                 next.setEnabled(false);
+                loop.setEnabled(false);
                 pause.setText("Resume");
-                seekHandler.removeCallbacks(run);
             } else {
                 myService.onResume();
                 prev.setEnabled(true);
                 next.setEnabled(true);
+                loop.setEnabled(true);
                 pause.setText("Pause");
-                seekUpdates();
             }
 
         }
@@ -213,6 +231,7 @@ public class main extends Activity implements ServiceConnection {
             stop.setEnabled(false);
             prev.setEnabled(false);
             next.setEnabled(false);
+            loop.setEnabled(false);
             seekHandler.removeCallbacks(run);
 
         }
@@ -242,10 +261,12 @@ public class main extends Activity implements ServiceConnection {
 
     Runnable run = new Runnable() {
         @Override public void run() {
+
             seekUpdates();
         } };
 
     public void seekUpdates() {
+        tS.setText(myService.songNames[myService.mAudioPosition]);
         seekBar.setMax(myService.mPlayer.getDuration());
         seekBar.setProgress(myService.mPlayer.getCurrentPosition());
         seekHandler.postDelayed(run, 1000);
