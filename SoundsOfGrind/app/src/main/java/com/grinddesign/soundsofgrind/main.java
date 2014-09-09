@@ -78,25 +78,7 @@ public class main extends Activity implements ServiceConnection {
         prev.setOnClickListener(playPrev);
         next.setOnClickListener(playNext);
 
-        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                prog = progress;
-            }
 
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-                if (prog<30) {
-                    prog = 30;
-                    seekBar.setProgress(prog);
-                }
-            }
-        });
 
         /**
          * set intent to handler in service
@@ -106,31 +88,15 @@ public class main extends Activity implements ServiceConnection {
         startService(intent);
 
         if(savedInstanceState != null) {
-            /**
-             * initial button settings for app
-             */
-            tS.setText(myService.songNames[myService.mAudioPosition]);
-            play.setEnabled(false);
-            pause.setEnabled(true);
-            stop.setEnabled(true);
-            prev.setEnabled(true);
-            next.setEnabled(true);
-            loop.setEnabled(true);
-        }
-        else {
-            /**
-             * initial button settings for app
-             */
 
-            play.setEnabled(true);
-            pause.setEnabled(false);
-            stop.setEnabled(false);
-            prev.setEnabled(false);
-            next.setEnabled(false);
-            loop.setEnabled(false);
+
         }
 
-
+        play.setEnabled(true);
+        pause.setEnabled(false);
+        stop.setEnabled(false);
+        prev.setEnabled(false);
+        next.setEnabled(false);
 
         Log.i("Test", "2");
     }
@@ -205,13 +171,11 @@ public class main extends Activity implements ServiceConnection {
                 myService.onPause();
                 prev.setEnabled(false);
                 next.setEnabled(false);
-                loop.setEnabled(false);
                 pause.setText("Resume");
             } else {
                 myService.onResume();
                 prev.setEnabled(true);
                 next.setEnabled(true);
-                loop.setEnabled(true);
                 pause.setText("Pause");
             }
 
@@ -231,7 +195,6 @@ public class main extends Activity implements ServiceConnection {
             stop.setEnabled(false);
             prev.setEnabled(false);
             next.setEnabled(false);
-            loop.setEnabled(false);
             seekHandler.removeCallbacks(run);
 
         }
