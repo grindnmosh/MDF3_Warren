@@ -12,6 +12,7 @@ import android.os.ResultReceiver;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 /**
@@ -37,12 +38,17 @@ public class main extends Activity implements ServiceConnection {
     Button stop;
     Button prev;
     Button next;
+    Button loop;
+    SeekBar seekBar;
+    int prog = 0;
     public TextView tS;
     playService myService;
     playService.BoundServiceBinder binder;
     public static final String EXTRA_RECEIVER = "main.EXTRA_RECEIVER";
     public static final String DATA_RETURNED = "main.DATA_RETURNED";
     public static final int RESULT_DATA_RETURNED = 0;
+    Handler seekHandler = new Handler();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,12 +69,35 @@ public class main extends Activity implements ServiceConnection {
         stop = (Button) findViewById(R.id.stop);
         prev = (Button) findViewById(R.id.back);
         next = (Button) findViewById(R.id.fwd);
+        loop = (Button) findViewById(R.id.loopy);
         tS = (TextView) findViewById(R.id.titleShot);
+        seekBar = (SeekBar) findViewById(R.id.seekBar);
+
         play.setOnClickListener(playClick);
         pause.setOnClickListener(pauseClick);
         stop.setOnClickListener(stopClick);
         prev.setOnClickListener(playPrev);
         next.setOnClickListener(playNext);
+
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                prog = progress;
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                if (prog<30) {
+                    prog = 30;
+                    seekBar.setProgress(prog);
+                }
+            }
+        });
 
         /**
          * set intent to handler in service
@@ -139,6 +168,9 @@ public class main extends Activity implements ServiceConnection {
             prev.setEnabled(true);
             next.setEnabled(true);
             songTitle();
+            seekBar.setProgress(0);
+
+            seekUpdates();
             Log.i("Here I Am", "Deal With It");
 
         }
@@ -156,11 +188,13 @@ public class main extends Activity implements ServiceConnection {
                 prev.setEnabled(false);
                 next.setEnabled(false);
                 pause.setText("Resume");
+                seekHandler.removeCallbacks(run);
             } else {
                 myService.onResume();
                 prev.setEnabled(true);
                 next.setEnabled(true);
                 pause.setText("Pause");
+                seekUpdates();
             }
 
         }
@@ -179,6 +213,7 @@ public class main extends Activity implements ServiceConnection {
             stop.setEnabled(false);
             prev.setEnabled(false);
             next.setEnabled(false);
+            seekHandler.removeCallbacks(run);
 
         }
     };
@@ -204,6 +239,19 @@ public class main extends Activity implements ServiceConnection {
             songTitle();
         }
     };
+
+    Runnable run = new Runnable() {
+        @Override public void run() {
+            seekUpdates();
+        } };
+
+    public void seekUpdates() {
+        seekBar.setMax(myService.mPlayer.getDuration());
+        seekBar.setProgress(myService.mPlayer.getCurrentPosition());
+        seekHandler.postDelayed(run, 1000);
+    }
+
+
 
     /**
      * bind service when its connected
