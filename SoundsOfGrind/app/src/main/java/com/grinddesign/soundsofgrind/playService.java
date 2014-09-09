@@ -46,6 +46,7 @@ public class playService extends Service implements MediaPlayer.OnPreparedListen
     boolean mActivityResumed;
     boolean mPrepared;
     int mAudioPosition;
+    int loopOn;
     String[] stringArray = new String[]{"/raw/blackmail", "/raw/die_dead_enough", "/raw/kick_the_chair", "/raw/scorpion", "/raw/tears_in_a_vial"};
     String[] songNames = new String[]{"Blackmail The Universe", "Die Dead Enough", "Kick The Chair", "Scorpion", "Tears In A Vial"};
     private static final int ID = 1975;
@@ -89,6 +90,7 @@ public class playService extends Service implements MediaPlayer.OnPreparedListen
      */
     protected void play() {
         Log.i("test", "playMain");
+
         mAudioPosition = 0;
         mPlayer = new MediaPlayer();
         mPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
@@ -191,59 +193,36 @@ public class playService extends Service implements MediaPlayer.OnPreparedListen
      * Actions taken when skip back button clicked
      */
     public void onPrev() {
-        if (mAudioPosition >= 1) {
-            mAudioPosition--;
-            mPlayer.reset();
-            mPlayer = new MediaPlayer();
-            mPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-            mPlayer.setOnPreparedListener(playService.this);
-            mPlayer.setOnCompletionListener(playService.this);
-            try {
-                mPlayer.setDataSource(playService.this, Uri.parse("android.resource://" + getPackageName() + stringArray[mAudioPosition]));
-            } catch (IOException e) {
-                e.printStackTrace();
+        if (loopOn == 0) {
+            if (mAudioPosition >= 1) {
+                mAudioPosition--;
+                mPlayer.reset();
+                mPlayer = new MediaPlayer();
+                mPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+                mPlayer.setOnPreparedListener(playService.this);
+                mPlayer.setOnCompletionListener(playService.this);
+                try {
+                    mPlayer.setDataSource(playService.this, Uri.parse("android.resource://" + getPackageName() + stringArray[mAudioPosition]));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                mPlayer.prepareAsync();
+            } else {
+                mPlayer.reset();
+                mAudioPosition = 0;
+                mPlayer = new MediaPlayer();
+                mPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+                mPlayer.setOnPreparedListener(playService.this);
+                mPlayer.setOnCompletionListener(playService.this);
+                try {
+                    mPlayer.setDataSource(playService.this, Uri.parse("android.resource://" + getPackageName() + stringArray[mAudioPosition]));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                mPlayer.prepareAsync();
             }
-            mPlayer.prepareAsync();
-        } else {
-            mPlayer.reset();
-            mAudioPosition = 0;
-            mPlayer = new MediaPlayer();
-            mPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-            mPlayer.setOnPreparedListener(playService.this);
-            mPlayer.setOnCompletionListener(playService.this);
-            try {
-                mPlayer.setDataSource(playService.this, Uri.parse("android.resource://" + getPackageName() + stringArray[mAudioPosition]));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            mPlayer.prepareAsync();
         }
-
-
-    }
-
-    /**
-     * Actions taken when skip forward button clicked
-     */
-    protected void onNext() {
-        if (mAudioPosition < stringArray.length - 1) {
-            Log.i("Am I", "Hitting Here?");
-            mAudioPosition++;
-            mPlayer.reset();
-            mPlayer = new MediaPlayer();
-            mPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-            mPlayer.setOnPreparedListener(playService.this);
-            mPlayer.setOnCompletionListener(playService.this);
-            try {
-                mPlayer.setDataSource(playService.this, Uri.parse("android.resource://" + getPackageName() + stringArray[mAudioPosition]));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            mPlayer.prepareAsync();
-        } else {
-            Log.i("Am I", "Hitting?");
-            mPlayer.reset();
-            mAudioPosition = 0;
+        else {
             mPlayer.reset();
             mPlayer = new MediaPlayer();
             mPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
@@ -251,6 +230,61 @@ public class playService extends Service implements MediaPlayer.OnPreparedListen
             mPlayer.setOnCompletionListener(playService.this);
             try {
                 mPlayer.setDataSource(playService.this, Uri.parse("android.resource://" + getPackageName() + "/" + stringArray[mAudioPosition]));
+                Intent i = new Intent("New Song");
+                onHandleIntent(i);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            mPlayer.prepareAsync();
+        }
+    }
+
+    /**
+     * Actions taken when skip forward button clicked
+     */
+    protected void onNext() {
+        if (loopOn == 0) {
+            if (mAudioPosition < stringArray.length - 1) {
+                Log.i("Am I", "Hitting Here?");
+                mAudioPosition++;
+                mPlayer.reset();
+                mPlayer = new MediaPlayer();
+                mPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+                mPlayer.setOnPreparedListener(playService.this);
+                mPlayer.setOnCompletionListener(playService.this);
+                try {
+                    mPlayer.setDataSource(playService.this, Uri.parse("android.resource://" + getPackageName() + stringArray[mAudioPosition]));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                mPlayer.prepareAsync();
+            } else {
+                Log.i("Am I", "Hitting?");
+                mPlayer.reset();
+                mAudioPosition = 0;
+                mPlayer.reset();
+                mPlayer = new MediaPlayer();
+                mPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+                mPlayer.setOnPreparedListener(playService.this);
+                mPlayer.setOnCompletionListener(playService.this);
+                try {
+                    mPlayer.setDataSource(playService.this, Uri.parse("android.resource://" + getPackageName() + "/" + stringArray[mAudioPosition]));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                mPlayer.prepareAsync();
+            }
+        }
+        else {
+            mPlayer.reset();
+            mPlayer = new MediaPlayer();
+            mPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+            mPlayer.setOnPreparedListener(playService.this);
+            mPlayer.setOnCompletionListener(playService.this);
+            try {
+                mPlayer.setDataSource(playService.this, Uri.parse("android.resource://" + getPackageName() + "/" + stringArray[mAudioPosition]));
+                Intent i = new Intent("New Song");
+                onHandleIntent(i);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -264,40 +298,58 @@ public class playService extends Service implements MediaPlayer.OnPreparedListen
      */
     @Override
     public void onCompletion(MediaPlayer mp) {
-        if (mAudioPosition < stringArray.length - 1) {
-            Log.i("Am I", "Complete?");
-            mAudioPosition++;
-            mPlayer.reset();
-            mPlayer = new MediaPlayer();
-            mPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-            mPlayer.setOnPreparedListener(playService.this);
-            mPlayer.setOnCompletionListener(playService.this);
-            try {
-                mPlayer.setDataSource(playService.this, Uri.parse("android.resource://" + getPackageName() + "/" + stringArray[mAudioPosition]));
-                Intent i = new Intent("New Song");
-                onHandleIntent(i);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            mPlayer.prepareAsync();
-        } else {
-            Log.i("Am I", "Here?");
-            mAudioPosition = 0;
-            mPlayer.reset();
-            mPlayer = new MediaPlayer();
-            mPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-            mPlayer.setOnPreparedListener(playService.this);
-            mPlayer.setOnCompletionListener(playService.this);
-            try {
-                mPlayer.setDataSource(playService.this, Uri.parse("android.resource://" + getPackageName() + "/" + stringArray[mAudioPosition]));
-                Intent i = new Intent("New Song");
-                onHandleIntent(i);
+        if (loopOn == 0) {
+            if (mAudioPosition < stringArray.length - 1) {
+                Log.i("Am I", "Complete?");
+                mAudioPosition++;
+                mPlayer.reset();
+                mPlayer = new MediaPlayer();
+                mPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+                mPlayer.setOnPreparedListener(playService.this);
+                mPlayer.setOnCompletionListener(playService.this);
+                try {
+                    mPlayer.setDataSource(playService.this, Uri.parse("android.resource://" + getPackageName() + "/" + stringArray[mAudioPosition]));
+                    Intent i = new Intent("New Song");
+                    onHandleIntent(i);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                mPlayer.prepareAsync();
+            } else {
+                Log.i("Am I", "Here?");
+                mAudioPosition = 0;
+                mPlayer.reset();
+                mPlayer = new MediaPlayer();
+                mPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+                mPlayer.setOnPreparedListener(playService.this);
+                mPlayer.setOnCompletionListener(playService.this);
+                try {
+                    mPlayer.setDataSource(playService.this, Uri.parse("android.resource://" + getPackageName() + "/" + stringArray[mAudioPosition]));
+                    Intent i = new Intent("New Song");
+                    onHandleIntent(i);
 
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                mPlayer.prepareAsync();
+            }
+        }
+        else {
+            mPlayer.reset();
+            mPlayer = new MediaPlayer();
+            mPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+            mPlayer.setOnPreparedListener(playService.this);
+            mPlayer.setOnCompletionListener(playService.this);
+            try {
+                mPlayer.setDataSource(playService.this, Uri.parse("android.resource://" + getPackageName() + "/" + stringArray[mAudioPosition]));
+                Intent i = new Intent("New Song");
+                onHandleIntent(i);
             } catch (IOException e) {
                 e.printStackTrace();
             }
             mPlayer.prepareAsync();
         }
+
 
     }
 

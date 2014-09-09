@@ -77,6 +77,7 @@ public class main extends Activity implements ServiceConnection {
         stop.setOnClickListener(stopClick);
         prev.setOnClickListener(playPrev);
         next.setOnClickListener(playNext);
+        loop.setOnClickListener(loopIt);
 
 
 
@@ -153,7 +154,7 @@ public class main extends Activity implements ServiceConnection {
             next.setEnabled(true);
             //songTitle();
             seekBar.setProgress(0);
-
+            myService.loopOn = 0;
             seekUpdates();
             Log.i("Here I Am", "Deal With It");
 
@@ -221,6 +222,24 @@ public class main extends Activity implements ServiceConnection {
             songTitle();
         }
     };
+
+    View.OnClickListener loopIt = new View.OnClickListener() {
+
+        @Override
+        public void onClick(View v){
+            Log.e("Is It Reading", "My Clicks");
+            String test = "Play All";
+            if (test.equals(loop.getText())) {
+                myService.loopOn = 0;
+                loop.setText("Repeat Song");
+            }
+            else {
+                myService.loopOn = 1;
+                loop.setText("Play All");
+            }
+        }
+    };
+
 
     Runnable run = new Runnable() {
         @Override public void run() {
