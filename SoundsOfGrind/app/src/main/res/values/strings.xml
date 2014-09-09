@@ -12,5 +12,6 @@
     <string name="bck">Prev</string>
     <string name="band">MEGADETH</string>
     <string name="album">The System Has Failed</string>
+    <string name="repeat">Repeat Song</string>
 
 </resources>

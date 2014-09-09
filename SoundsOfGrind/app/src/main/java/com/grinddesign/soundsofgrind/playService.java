@@ -175,7 +175,7 @@ public class playService extends Service implements MediaPlayer.OnPreparedListen
         Notification.Builder builder = new Notification.Builder(this);
 
         builder.setContentIntent(pendInt)
-                .setSmallIcon(R.drawable.ic_sog)
+                .setSmallIcon(R.drawable.ic_launcher)
                 .setTicker(currentSong)
                 .setOngoing(true)
                 .setContentTitle("Current Song")
