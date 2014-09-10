@@ -47,6 +47,7 @@ public class main extends Activity implements ServiceConnection {
     public static final String DATA_RETURNED = "main.DATA_RETURNED";
     public static final int RESULT_DATA_RETURNED = 0;
     Handler seekHandler = new Handler();
+
     String songTitle;
     private static final String SAVED = "songs";
 
@@ -80,8 +81,6 @@ public class main extends Activity implements ServiceConnection {
         next.setOnClickListener(playNext);
         loop.setOnClickListener(loopIt);
 
-
-
         /**
          * set intent to handler in service
          */
@@ -89,8 +88,7 @@ public class main extends Activity implements ServiceConnection {
         intent.putExtra(EXTRA_RECEIVER, new DataReceiver());
         startService(intent);
 
-
-
+        seekBar.setProgress(0);
 
         Log.i("Test", "2");
     }
@@ -158,6 +156,7 @@ public class main extends Activity implements ServiceConnection {
             myService.play();
             myService.loopOn = 0;
             seekUpdates();
+
             Log.i("Here I Am", "Deal With It");
 
         }
@@ -241,8 +240,7 @@ public class main extends Activity implements ServiceConnection {
         } };
 
     public void seekUpdates() {
-        tS.setText(myService.songNames[myService.mAudioPosition]);
-        seekBar.setProgress(0);
+        songTitle();
         seekBar.setMax(myService.mPlayer.getDuration());
         seekBar.setProgress(myService.mPlayer.getCurrentPosition());
         seekHandler.postDelayed(run, 1000);

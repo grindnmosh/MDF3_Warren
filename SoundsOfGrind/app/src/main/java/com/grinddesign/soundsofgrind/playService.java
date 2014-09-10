@@ -169,7 +169,6 @@ public class playService extends Service implements MediaPlayer.OnPreparedListen
     public void onPrepared(MediaPlayer mp) {
         mPrepared = true;
         mPlayer.start();
-
         String currentSong = songNames[mAudioPosition];
         Intent notIntent = new Intent(this, main.class);
         notIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
