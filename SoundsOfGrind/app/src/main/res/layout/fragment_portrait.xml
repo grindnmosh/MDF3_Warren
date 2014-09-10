@@ -2,14 +2,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.grinddesign.soundsofgrind.portrait">
+    tools:context="com.grinddesign.soundsofgrind.MainFragment">
 
     <!-- TODO: Update blank fragment layout -->
 
     <fragment
         android:layout_width="match_parent"
         android:layout_height="529dp"
-        android:name="com.grinddesign.soundsofgrind.portrait"
+        android:name="com.grinddesign.soundsofgrind.MainFragment"
         android:id="@+id/fragment"
         android:layout_gravity="left|top" />
 </FrameLayout>
