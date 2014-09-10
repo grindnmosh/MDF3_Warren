@@ -28,7 +28,7 @@ import android.widget.TextView;
 
 public class main extends Activity implements ServiceConnection {
 
-    private static final String SAVED = "MainActivity.SAVE";
+
 
     /**
      * global variables
@@ -40,7 +40,6 @@ public class main extends Activity implements ServiceConnection {
     Button next;
     Button loop;
     SeekBar seekBar;
-    int prog = 0;
     public TextView tS;
     playService myService;
     playService.BoundServiceBinder binder;
@@ -48,13 +47,15 @@ public class main extends Activity implements ServiceConnection {
     public static final String DATA_RETURNED = "main.DATA_RETURNED";
     public static final int RESULT_DATA_RETURNED = 0;
     Handler seekHandler = new Handler();
+    String songTitle;
+    private static final String SAVED = "songs";
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.fragment_portrait);
 
         Log.i("Test", "1");
 
@@ -69,7 +70,7 @@ public class main extends Activity implements ServiceConnection {
         prev = (Button) findViewById(R.id.back);
         next = (Button) findViewById(R.id.fwd);
         loop = (Button) findViewById(R.id.loopy);
-        tS = (TextView) findViewById(R.id.titleShot);
+        tS = (TextView) findViewById(R.id.titleshot);
         seekBar = (SeekBar) findViewById(R.id.seekBar);
 
         play.setOnClickListener(playClick);
@@ -88,18 +89,25 @@ public class main extends Activity implements ServiceConnection {
         intent.putExtra(EXTRA_RECEIVER, new DataReceiver());
         startService(intent);
 
-        if(savedInstanceState != null) {
 
 
-        }
-
-        play.setEnabled(true);
-        pause.setEnabled(false);
-        stop.setEnabled(false);
-        prev.setEnabled(false);
-        next.setEnabled(false);
 
         Log.i("Test", "2");
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        songTitle = (String) tS.getText();
+        outState.putString(SAVED, songTitle);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedState) {
+        super.onRestoreInstanceState(savedState);
+        songTitle  = savedState.getString(SAVED);
+        tS.setText(songTitle);
+        seekHandler.postDelayed(run, 1000);
     }
 
     /**
@@ -131,6 +139,7 @@ public class main extends Activity implements ServiceConnection {
         bindService(playIntent, this, Context.BIND_AUTO_CREATE);
         Log.i("test", "hit 2");
         startService(playIntent);
+
     }
 
     /**
@@ -147,13 +156,6 @@ public class main extends Activity implements ServiceConnection {
         @Override
         public void onClick(View v) {
             myService.play();
-            play.setEnabled(false);
-            pause.setEnabled(true);
-            stop.setEnabled(true);
-            prev.setEnabled(true);
-            next.setEnabled(true);
-            //songTitle();
-            seekBar.setProgress(0);
             myService.loopOn = 0;
             seekUpdates();
             Log.i("Here I Am", "Deal With It");
@@ -170,13 +172,9 @@ public class main extends Activity implements ServiceConnection {
         public void onClick(View v) {
             if (myService.mPlayer.isPlaying()){
                 myService.onPause();
-                prev.setEnabled(false);
-                next.setEnabled(false);
                 pause.setText("Resume");
             } else {
                 myService.onResume();
-                prev.setEnabled(true);
-                next.setEnabled(true);
                 pause.setText("Pause");
             }
 
@@ -191,11 +189,6 @@ public class main extends Activity implements ServiceConnection {
         @Override
         public void onClick(View v) {
             myService.onStop();
-            play.setEnabled(true);
-            pause.setEnabled(false);
-            stop.setEnabled(false);
-            prev.setEnabled(false);
-            next.setEnabled(false);
             seekHandler.removeCallbacks(run);
 
         }
@@ -249,6 +242,7 @@ public class main extends Activity implements ServiceConnection {
 
     public void seekUpdates() {
         tS.setText(myService.songNames[myService.mAudioPosition]);
+        seekBar.setProgress(0);
         seekBar.setMax(myService.mPlayer.getDuration());
         seekBar.setProgress(myService.mPlayer.getCurrentPosition());
         seekHandler.postDelayed(run, 1000);
