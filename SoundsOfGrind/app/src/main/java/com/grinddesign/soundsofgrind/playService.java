@@ -2,12 +2,9 @@ package com.grinddesign.soundsofgrind;
 
 import android.annotation.TargetApi;
 import android.app.Notification;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
-import android.graphics.BitmapFactory;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -17,14 +14,8 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.os.ResultReceiver;
 import android.util.Log;
-import android.widget.Button;
-import android.widget.ProgressBar;
-import android.widget.SeekBar;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import java.io.IOException;
-import java.util.Random;
 
 /**
  * Author:  Robert Warren
@@ -37,7 +28,7 @@ import java.util.Random;
  */
 
 
-public class playService extends Service implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCompletionListener {
+public class PlayService extends Service implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCompletionListener {
 
     /**
      * global variables
@@ -52,7 +43,7 @@ public class playService extends Service implements MediaPlayer.OnPreparedListen
     private static final int ID = 1975;
 
 
-    public playService() {
+    public PlayService() {
         super();
     }
 
@@ -61,9 +52,9 @@ public class playService extends Service implements MediaPlayer.OnPreparedListen
      */
 
     protected void onHandleIntent(Intent intent) {
-            ResultReceiver receiver = intent.getParcelableExtra(main.EXTRA_RECEIVER);
+            ResultReceiver receiver = intent.getParcelableExtra(Main.EXTRA_RECEIVER);
             Bundle result = new Bundle();
-            result.putString(main.DATA_RETURNED, "any text");
+            result.putString(Main.DATA_RETURNED, "any text");
             Log.e("result =", String.valueOf(result));
             //receiver.send(main.RESULT_DATA_RETURNED, result);
 
@@ -73,8 +64,8 @@ public class playService extends Service implements MediaPlayer.OnPreparedListen
      * Service Binder methods
      */
     public class BoundServiceBinder extends Binder {
-        public playService getService() {
-            return playService.this;
+        public PlayService getService() {
+            return PlayService.this;
         }
        ;
     }
@@ -95,11 +86,11 @@ public class playService extends Service implements MediaPlayer.OnPreparedListen
         mPlayer = new MediaPlayer();
         mPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
         Log.i("test", "playMain1");
-        mPlayer.setOnPreparedListener(playService.this);
-        mPlayer.setOnCompletionListener(playService.this);
+        mPlayer.setOnPreparedListener(PlayService.this);
+        mPlayer.setOnCompletionListener(PlayService.this);
         Log.i("test", "play");
         try {
-            mPlayer.setDataSource(playService.this, Uri.parse("android.resource://" + getPackageName() + stringArray[mAudioPosition]));
+            mPlayer.setDataSource(PlayService.this, Uri.parse("android.resource://" + getPackageName() + stringArray[mAudioPosition]));
             mPlayer.prepareAsync();
             Intent i = new Intent("New Song");
             onHandleIntent(i);
@@ -170,7 +161,7 @@ public class playService extends Service implements MediaPlayer.OnPreparedListen
         mPrepared = true;
         mPlayer.start();
         String currentSong = songNames[mAudioPosition];
-        Intent notIntent = new Intent(this, main.class);
+        Intent notIntent = new Intent(this, Main.class);
         notIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         PendingIntent pendInt = PendingIntent.getActivity(this, 0, notIntent, 0);
         Notification.Builder builder = new Notification.Builder(this);
@@ -198,10 +189,10 @@ public class playService extends Service implements MediaPlayer.OnPreparedListen
                 mPlayer.reset();
                 mPlayer = new MediaPlayer();
                 mPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-                mPlayer.setOnPreparedListener(playService.this);
-                mPlayer.setOnCompletionListener(playService.this);
+                mPlayer.setOnPreparedListener(PlayService.this);
+                mPlayer.setOnCompletionListener(PlayService.this);
                 try {
-                    mPlayer.setDataSource(playService.this, Uri.parse("android.resource://" + getPackageName() + stringArray[mAudioPosition]));
+                    mPlayer.setDataSource(PlayService.this, Uri.parse("android.resource://" + getPackageName() + stringArray[mAudioPosition]));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -211,10 +202,10 @@ public class playService extends Service implements MediaPlayer.OnPreparedListen
                 mAudioPosition = 0;
                 mPlayer = new MediaPlayer();
                 mPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-                mPlayer.setOnPreparedListener(playService.this);
-                mPlayer.setOnCompletionListener(playService.this);
+                mPlayer.setOnPreparedListener(PlayService.this);
+                mPlayer.setOnCompletionListener(PlayService.this);
                 try {
-                    mPlayer.setDataSource(playService.this, Uri.parse("android.resource://" + getPackageName() + stringArray[mAudioPosition]));
+                    mPlayer.setDataSource(PlayService.this, Uri.parse("android.resource://" + getPackageName() + stringArray[mAudioPosition]));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -225,10 +216,10 @@ public class playService extends Service implements MediaPlayer.OnPreparedListen
             mPlayer.reset();
             mPlayer = new MediaPlayer();
             mPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-            mPlayer.setOnPreparedListener(playService.this);
-            mPlayer.setOnCompletionListener(playService.this);
+            mPlayer.setOnPreparedListener(PlayService.this);
+            mPlayer.setOnCompletionListener(PlayService.this);
             try {
-                mPlayer.setDataSource(playService.this, Uri.parse("android.resource://" + getPackageName() + "/" + stringArray[mAudioPosition]));
+                mPlayer.setDataSource(PlayService.this, Uri.parse("android.resource://" + getPackageName() + "/" + stringArray[mAudioPosition]));
                 Intent i = new Intent("New Song");
                 onHandleIntent(i);
             } catch (IOException e) {
@@ -249,10 +240,10 @@ public class playService extends Service implements MediaPlayer.OnPreparedListen
                 mPlayer.reset();
                 mPlayer = new MediaPlayer();
                 mPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-                mPlayer.setOnPreparedListener(playService.this);
-                mPlayer.setOnCompletionListener(playService.this);
+                mPlayer.setOnPreparedListener(PlayService.this);
+                mPlayer.setOnCompletionListener(PlayService.this);
                 try {
-                    mPlayer.setDataSource(playService.this, Uri.parse("android.resource://" + getPackageName() + stringArray[mAudioPosition]));
+                    mPlayer.setDataSource(PlayService.this, Uri.parse("android.resource://" + getPackageName() + stringArray[mAudioPosition]));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -264,10 +255,10 @@ public class playService extends Service implements MediaPlayer.OnPreparedListen
                 mPlayer.reset();
                 mPlayer = new MediaPlayer();
                 mPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-                mPlayer.setOnPreparedListener(playService.this);
-                mPlayer.setOnCompletionListener(playService.this);
+                mPlayer.setOnPreparedListener(PlayService.this);
+                mPlayer.setOnCompletionListener(PlayService.this);
                 try {
-                    mPlayer.setDataSource(playService.this, Uri.parse("android.resource://" + getPackageName() + "/" + stringArray[mAudioPosition]));
+                    mPlayer.setDataSource(PlayService.this, Uri.parse("android.resource://" + getPackageName() + "/" + stringArray[mAudioPosition]));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -278,10 +269,10 @@ public class playService extends Service implements MediaPlayer.OnPreparedListen
             mPlayer.reset();
             mPlayer = new MediaPlayer();
             mPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-            mPlayer.setOnPreparedListener(playService.this);
-            mPlayer.setOnCompletionListener(playService.this);
+            mPlayer.setOnPreparedListener(PlayService.this);
+            mPlayer.setOnCompletionListener(PlayService.this);
             try {
-                mPlayer.setDataSource(playService.this, Uri.parse("android.resource://" + getPackageName() + "/" + stringArray[mAudioPosition]));
+                mPlayer.setDataSource(PlayService.this, Uri.parse("android.resource://" + getPackageName() + "/" + stringArray[mAudioPosition]));
                 Intent i = new Intent("New Song");
                 onHandleIntent(i);
             } catch (IOException e) {
@@ -304,10 +295,10 @@ public class playService extends Service implements MediaPlayer.OnPreparedListen
                 mPlayer.reset();
                 mPlayer = new MediaPlayer();
                 mPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-                mPlayer.setOnPreparedListener(playService.this);
-                mPlayer.setOnCompletionListener(playService.this);
+                mPlayer.setOnPreparedListener(PlayService.this);
+                mPlayer.setOnCompletionListener(PlayService.this);
                 try {
-                    mPlayer.setDataSource(playService.this, Uri.parse("android.resource://" + getPackageName() + "/" + stringArray[mAudioPosition]));
+                    mPlayer.setDataSource(PlayService.this, Uri.parse("android.resource://" + getPackageName() + "/" + stringArray[mAudioPosition]));
                     Intent i = new Intent("New Song");
                     onHandleIntent(i);
                 } catch (IOException e) {
@@ -320,10 +311,10 @@ public class playService extends Service implements MediaPlayer.OnPreparedListen
                 mPlayer.reset();
                 mPlayer = new MediaPlayer();
                 mPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-                mPlayer.setOnPreparedListener(playService.this);
-                mPlayer.setOnCompletionListener(playService.this);
+                mPlayer.setOnPreparedListener(PlayService.this);
+                mPlayer.setOnCompletionListener(PlayService.this);
                 try {
-                    mPlayer.setDataSource(playService.this, Uri.parse("android.resource://" + getPackageName() + "/" + stringArray[mAudioPosition]));
+                    mPlayer.setDataSource(PlayService.this, Uri.parse("android.resource://" + getPackageName() + "/" + stringArray[mAudioPosition]));
                     Intent i = new Intent("New Song");
                     onHandleIntent(i);
 
@@ -337,10 +328,10 @@ public class playService extends Service implements MediaPlayer.OnPreparedListen
             mPlayer.reset();
             mPlayer = new MediaPlayer();
             mPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-            mPlayer.setOnPreparedListener(playService.this);
-            mPlayer.setOnCompletionListener(playService.this);
+            mPlayer.setOnPreparedListener(PlayService.this);
+            mPlayer.setOnCompletionListener(PlayService.this);
             try {
-                mPlayer.setDataSource(playService.this, Uri.parse("android.resource://" + getPackageName() + "/" + stringArray[mAudioPosition]));
+                mPlayer.setDataSource(PlayService.this, Uri.parse("android.resource://" + getPackageName() + "/" + stringArray[mAudioPosition]));
                 Intent i = new Intent("New Song");
                 onHandleIntent(i);
             } catch (IOException e) {

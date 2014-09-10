@@ -26,7 +26,7 @@ import android.widget.TextView;
  */
 
 
-public class main extends Activity implements ServiceConnection {
+public class Main extends Activity implements ServiceConnection {
 
 
 
@@ -41,8 +41,8 @@ public class main extends Activity implements ServiceConnection {
     Button loop;
     SeekBar seekBar;
     public TextView tS;
-    playService myService;
-    playService.BoundServiceBinder binder;
+    PlayService myService;
+    PlayService.BoundServiceBinder binder;
     public static final String EXTRA_RECEIVER = "main.EXTRA_RECEIVER";
     public static final String DATA_RETURNED = "main.DATA_RETURNED";
     public static final int RESULT_DATA_RETURNED = 0;
@@ -84,7 +84,7 @@ public class main extends Activity implements ServiceConnection {
         /**
          * set intent to handler in service
          */
-        Intent intent = new Intent(this, playService.class);
+        Intent intent = new Intent(this, PlayService.class);
         intent.putExtra(EXTRA_RECEIVER, new DataReceiver());
         startService(intent);
 
@@ -133,7 +133,7 @@ public class main extends Activity implements ServiceConnection {
     protected void onStart() {
         super.onStart();
         Log.i("test", "hit 1");
-        Intent playIntent = new Intent(this, playService.class);
+        Intent playIntent = new Intent(this, PlayService.class);
         bindService(playIntent, this, Context.BIND_AUTO_CREATE);
         Log.i("test", "hit 2");
         startService(playIntent);
@@ -257,7 +257,7 @@ public class main extends Activity implements ServiceConnection {
      */
     @Override
     public void onServiceConnected(ComponentName name, IBinder service) {
-        binder = (playService.BoundServiceBinder)service;
+        binder = (PlayService.BoundServiceBinder)service;
         myService = binder.getService();
     }
 
@@ -266,7 +266,7 @@ public class main extends Activity implements ServiceConnection {
      */
     @Override
     public void onServiceDisconnected(ComponentName name) {
-        unbindService(main.this);
+        unbindService(Main.this);
     }
 
 }

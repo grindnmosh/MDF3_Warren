@@ -27,12 +27,10 @@ import android.widget.TextView;
  */
 
 
-public class portrait extends Fragment {
+public class Portrait extends Fragment {
 
 
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 
     @Override
     public void onAttach(Activity activity){
