@@ -240,10 +240,14 @@ public class main extends Activity implements ServiceConnection {
         } };
 
     public void seekUpdates() {
+        if (myService.mPrepared) {
+            seekBar.setMax(myService.mPlayer.getDuration());
+            seekBar.setProgress(myService.mPlayer.getCurrentPosition());
+        }
         songTitle();
-        seekBar.setMax(myService.mPlayer.getDuration());
-        seekBar.setProgress(myService.mPlayer.getCurrentPosition());
         seekHandler.postDelayed(run, 1000);
+
+
     }
 
 
