@@ -61,7 +61,7 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="@string/album"
-        android:id="@+id/titleshot"
+        android:id="@+id/album"
         android:gravity="center_vertical|center_horizontal|bottom"
         android:layout_below="@+id/textView2"
         android:layout_alignParentRight="true"
@@ -71,13 +71,12 @@
         android:orientation="horizontal"
         android:layout_width="wrap_content"
         android:layout_height="40dp"
-        android:layout_toStartOf="@+id/stop"
         android:layout_marginBottom="69dp"
         android:id="@+id/linearLayout"
         android:layout_above="@+id/seekBar"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_marginLeft="30dp">
+        android:layout_marginStart="30dp">
 
         <Button
             style="?android:attr/buttonStyleSmall"
@@ -85,9 +84,6 @@
             android:layout_height="40dp"
             android:text="@string/play"
             android:id="@+id/play"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
             android:layout_marginBottom="37dp" />
 
         <Button
@@ -95,40 +91,28 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/bck"
-            android:id="@+id/back"
-            android:layout_alignTop="@+id/play"
-            android:layout_toRightOf="@+id/play"
-            android:layout_toEndOf="@+id/play" />
+            android:id="@+id/back"/>
 
         <Button
             style="?android:attr/buttonStyleSmall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/fwd"
-            android:id="@+id/fwd"
-            android:layout_alignTop="@+id/back"
-            android:layout_toRightOf="@+id/back"
-            android:layout_toEndOf="@+id/back" />
+            android:id="@+id/fwd" />
 
         <Button
             style="?android:attr/buttonStyleSmall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/pause"
-            android:id="@+id/pause"
-            android:layout_toEndOf="@+id/fwd"
-            android:layout_alignTop="@+id/fwd"
-            android:layout_toRightOf="@+id/fwd" />
+            android:id="@+id/pause"/>
 
         <Button
             style="?android:attr/buttonStyleSmall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/stop"
-            android:id="@+id/stop"
-            android:layout_toEndOf="@+id/pause"
-            android:layout_alignTop="@+id/pause"
-            android:layout_toRightOf="@+id/pause" />
+            android:id="@+id/stop"/>
     </LinearLayout>
 
     <SeekBar
