@@ -20,7 +20,9 @@ import java.util.ArrayList;
 public class MainActivity extends Activity implements AdapterView.OnItemClickListener {
 
     public static ArrayList<String> itemArray = new ArrayList<String>();
-    public static JSONArray goldenArray = new JSONArray();
+    public static ArrayList<String> carrArray = new ArrayList<String>();
+    public static ArrayList<String> trkArray = new ArrayList<String>();
+    public static ArrayList<String> datArray = new ArrayList<String>();
     public static ArrayAdapter<String> mainListAdapter;
     ListView lv;
 

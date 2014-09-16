@@ -78,6 +78,9 @@ public class FormActivity extends Activity {
                     //package data for passing through app
                     Log.i("item", item);
                     MainActivity.itemArray.add(item);
+                    MainActivity.carrArray.add(carrier);
+                    MainActivity.trkArray.add(trkNum);
+                    MainActivity.datArray.add(estDate);
                     Log.i("test", MainActivity.itemArray.toString());
                     MainActivity.mainListAdapter.notifyDataSetChanged();
                     Intent load = new Intent(FormActivity.this, MainActivity.class);
