@@ -4,10 +4,14 @@ import android.app.LauncherActivity;
 import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.widget.ListView;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.util.ArrayList;
 
 /**
@@ -26,6 +30,7 @@ public class TrakMeRemoteViewsFactory implements RemoteViewsService.RemoteViewsF
     Tracker tracker;
     private ArrayList itemsArray = new ArrayList();
     public static ArrayList arr;
+
     private Context context = null;
     private int appWidgetId;
 
@@ -35,16 +40,35 @@ public class TrakMeRemoteViewsFactory implements RemoteViewsService.RemoteViewsF
         appWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,
                 AppWidgetManager.INVALID_APPWIDGET_ID);
 
-        arr = new ArrayList();
-        populateListItem();
+
+
 
     }
 
     private void populateListItem() {
+        try {
+            Log.i("step", "1");
+            FileInputStream fis = context.openFileInput("items.dat");
+            Log.i("step", "2");
+            ObjectInputStream ois = new ObjectInputStream(fis);
+            Log.i("read", "trying to read saved file");
 
-        for (int i = 0; i < itemsArray.size(); i++) {
-            itemsArray.addAll(arr);
+            tracker = (Tracker) ois.readObject();
+            Log.i("read", String.valueOf(tracker));
+            itemsArray = tracker.getItem();
+
+
+            Log.i("test", MainActivity.itemArray.toString());
+
+
+            ois.close();
+            //MainActivity.mainListAdapter.notifyDataSetChanged();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
         }
+
 
     }
 
@@ -67,14 +91,15 @@ public class TrakMeRemoteViewsFactory implements RemoteViewsService.RemoteViewsF
     public RemoteViews getViewAt(int position) {
         final RemoteViews remoteView = new RemoteViews(
                 context.getPackageName(), R.layout.trak_widget);
-        LauncherActivity.ListItem listItem = (LauncherActivity.ListItem) itemsArray.get(position);
-        remoteView.setTextViewText(R.id.listView, listItem.label);
+        String str = (String) itemsArray.get(position);
+        remoteView.setTextViewText(R.id.listView, str);
 
         return remoteView;
     }
     @Override
     public void onCreate() {
-
+        arr = new ArrayList();
+        populateListItem();
     }
 
     @Override

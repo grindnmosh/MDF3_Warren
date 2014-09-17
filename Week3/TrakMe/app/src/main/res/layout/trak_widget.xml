@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="@dimen/widget_margin"
-    android:background="#09C"
+    android:background="#fffff2f4"
     tools:showIn="@layout/trak_widget_info">
 
     <ListView
