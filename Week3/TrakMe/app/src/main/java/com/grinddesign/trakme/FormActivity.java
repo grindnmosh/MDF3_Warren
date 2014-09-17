@@ -1,6 +1,7 @@
 package com.grinddesign.trakme;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -10,10 +11,16 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.FileOutputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 
 
-public class FormActivity extends Activity {
+public class FormActivity extends Activity implements Serializable {
 
 
     Button sub;
@@ -25,6 +32,9 @@ public class FormActivity extends Activity {
     String carrier;
     String trkNum;
     String estDate;
+    JSONObject jObj = new JSONObject();
+    private static final long serialVersionUID = 491345791112131449L;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,10 +87,34 @@ public class FormActivity extends Activity {
 
                     //package data for passing through app
                     Log.i("item", item);
-                    MainActivity.itemArray.add(item);
-                    MainActivity.carrArray.add(carrier);
-                    MainActivity.trkArray.add(trkNum);
-                    MainActivity.datArray.add(estDate);
+
+
+                    try {
+                        Log.i("jObj2", "am I here");
+                        FileOutputStream fos = openFileOutput("items.dat", MODE_PRIVATE);
+
+                        // Wrapping our file stream.
+                        Log.i("jObj2", "am I here2");
+                        ObjectOutputStream oos = new ObjectOutputStream(fos);
+
+                        // Writing the serializable object to the file
+                        Log.i("jObj2", "am I here3");
+                        Tracker tracker = new Tracker();
+                        tracker.setItem(item);
+                        tracker.setCarrier(carrier);
+                        tracker.setTracking(trkNum);
+                        tracker.setDate(estDate);
+                        oos.writeObject(tracker);
+                        Log.i("jObj2", String.valueOf(tracker));
+
+                        // Closing our object stream which also closes the wrapped stream.
+
+                        oos.close();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        Log.i("jObj2", "Not Doing It");
+                    }
+
                     Log.i("test", MainActivity.itemArray.toString());
                     MainActivity.mainListAdapter.notifyDataSetChanged();
                     Intent load = new Intent(FormActivity.this, MainActivity.class);
