@@ -1,6 +1,7 @@
 package com.grinddesign.trakme;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 
 import android.widget.TextView;
@@ -8,7 +9,6 @@ import android.widget.TextView;
 
 public class DetailActivity extends Activity {
 
-    static int pos;
     TextView itemName;
     TextView carr;
     TextView trk;
@@ -23,11 +23,12 @@ public class DetailActivity extends Activity {
         carr = (TextView) findViewById(R.id.textView5);
         trk = (TextView) findViewById(R.id.textView6);
         est = (TextView) findViewById(R.id.textView7);
+        Intent intent = getIntent();
 
-        itemName.setText((CharSequence) MainActivity.itemArray.get(pos));
-        carr.setText((CharSequence) MainActivity.carrArray.get(pos));
-        trk.setText((CharSequence) MainActivity.trkArray.get(pos));
-        est.setText((CharSequence) MainActivity.datArray.get(pos));
+        itemName.setText(intent.getStringExtra("item"));
+        carr.setText(intent.getStringExtra("carr"));
+        trk.setText(intent.getStringExtra("trk"));
+        est.setText(intent.getStringExtra("dat"));
     }
 
 

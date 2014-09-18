@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.webkit.DateSorter;
 import android.widget.Button;
 import android.widget.EditText;
 
@@ -46,6 +47,13 @@ public class FormActivity extends Activity implements Serializable {
         edit2 = (EditText) findViewById(R.id.editText2);
         edit3 = (EditText) findViewById(R.id.editText3);
         edit4 = (EditText) findViewById(R.id.editText4);
+
+        Intent intent = getIntent();
+        final ArrayList<String> itemString = intent.getStringArrayListExtra("item");
+        final ArrayList<String> carrString = intent.getStringArrayListExtra("carr");
+        final ArrayList<String> trkString = intent.getStringArrayListExtra("trk");
+        final ArrayList<String> dateString = intent.getStringArrayListExtra("dat");
+
 
 
 
@@ -88,6 +96,11 @@ public class FormActivity extends Activity implements Serializable {
                     //package data for passing through app
                     Log.i("item", item);
 
+                    itemString.add(item);
+                    carrString.add(carrier);
+                    trkString.add(trkNum);
+                    dateString.add(estDate);
+
 
                     try {
                         Log.i("jObj2", "am I here");
@@ -100,10 +113,10 @@ public class FormActivity extends Activity implements Serializable {
                         // Writing the serializable object to the file
                         Log.i("jObj2", "am I here3");
                         Tracker tracker = new Tracker();
-                        tracker.setItem(item);
-                        tracker.setCarrier(carrier);
-                        tracker.setTracking(trkNum);
-                        tracker.setDate(estDate);
+                        tracker.setItem(itemString);
+                        tracker.setCarrier(carrString);
+                        tracker.setTracking(trkString);
+                        tracker.setDate(dateString);
                         oos.writeObject(tracker);
                         Log.i("jObj2", String.valueOf(tracker));
 
@@ -115,8 +128,7 @@ public class FormActivity extends Activity implements Serializable {
                         Log.i("jObj2", "Not Doing It");
                     }
 
-                    Log.i("test", MainActivity.itemArray.toString());
-                    MainActivity.mainListAdapter.notifyDataSetChanged();
+
                     Intent load = new Intent(FormActivity.this, MainActivity.class);
                     load.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     Log.i("TAPPED OUT", "Reaching For Me");

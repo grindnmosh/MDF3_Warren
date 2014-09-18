@@ -28,8 +28,8 @@ public class TrakMeRemoteViewsFactory implements RemoteViewsService.RemoteViewsF
     private static final int ID_CONSTANT = 0x0101010;
 
     Tracker tracker;
-    private ArrayList itemsArray = new ArrayList();
-    public static ArrayList arr;
+    private ArrayList<String> itemsArray = new ArrayList<String>();
+    public static ArrayList<String> arr;
 
     private Context context = null;
     private int appWidgetId;
@@ -58,7 +58,6 @@ public class TrakMeRemoteViewsFactory implements RemoteViewsService.RemoteViewsF
             itemsArray = tracker.getItem();
 
 
-            Log.i("test", MainActivity.itemArray.toString());
 
 
             ois.close();
@@ -98,7 +97,7 @@ public class TrakMeRemoteViewsFactory implements RemoteViewsService.RemoteViewsF
     }
     @Override
     public void onCreate() {
-        arr = new ArrayList();
+        arr = new ArrayList<String>();
         populateListItem();
     }
 

@@ -1,5 +1,7 @@
 package com.grinddesign.trakme;
 
+import android.util.Log;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 
@@ -15,34 +17,37 @@ import java.util.ArrayList;
 public class Tracker implements Serializable {
 
 
-    private ArrayList item = MainActivity.itemArray;
+    private ArrayList<String> item = new ArrayList<String>();
 
-    private ArrayList carrier = MainActivity.carrArray;
+    private ArrayList<String> carrier = new ArrayList<String>();
 
-    private ArrayList tracking = MainActivity.trkArray;
+    private ArrayList<String> tracking = new ArrayList<String>();
 
-    private ArrayList dat = MainActivity.datArray;
+    private ArrayList<String> dat = new ArrayList<String>();
 
     private static final long serialVersionUID = 491345791112131449L;
 
-    public void setItem (String item)
+    public void setItem (ArrayList<String> item)
     {
-        this.item.add(item);
+        this.item = item;
+
     }
 
-    public void setCarrier (String carrier)
+    public void setCarrier (ArrayList<String> carrier)
     {
-        this.carrier.add(carrier);
+        this.carrier = carrier;
+
     }
 
-    public void setTracking(String tracking)
+    public void setTracking(ArrayList<String> tracking)
     {
-        this.tracking.add(tracking);
+        this.tracking = tracking;
     }
 
-    public void setDate(String dat)
+    public void setDate(ArrayList<String> dat)
     {
-        this.dat.add(dat);
+
+        this.dat = dat;
     }
 
     public ArrayList getItem()

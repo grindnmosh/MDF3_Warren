@@ -31,12 +31,11 @@ import java.util.ArrayList;
 
 public class MainActivity extends Activity implements AdapterView.OnItemClickListener, Serializable {
 
-    public static ArrayList itemArray = new ArrayList<String>();
-    public static ArrayList carrArray = new ArrayList<String>();
-    public static ArrayList trkArray = new ArrayList<String>();
-    public static ArrayList datArray = new ArrayList<String>();
-    private static final long serialVersionUID = 491345791112131449L;
-    public static ArrayAdapter<String> mainListAdapter;
+    public ArrayList<String> itemArray = new ArrayList<String>();
+    public ArrayList<String> carrArray = new ArrayList<String>();
+    public ArrayList<String> trkArray = new ArrayList<String>();
+    public ArrayList<String> datArray = new ArrayList<String>();
+    public ArrayAdapter<String> mainListAdapter;
     ListView lv;
 
 
@@ -66,11 +65,11 @@ public class MainActivity extends Activity implements AdapterView.OnItemClickLis
 
             loadIt();
 
-            Log.i("test", MainActivity.itemArray.toString());
+            Log.i("test", itemArray.toString());
 
 
             ois.close();
-            MainActivity.mainListAdapter.notifyDataSetChanged();
+            mainListAdapter.notifyDataSetChanged();
         } catch (IOException e) {
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
@@ -78,7 +77,6 @@ public class MainActivity extends Activity implements AdapterView.OnItemClickLis
         }
 
         //MainActivity.mainListAdapter.notifyDataSetChanged();
-        Log.i("read result", tracker.getItem().toString());
 
         if( savedInstanceState != null ) {
 
@@ -107,15 +105,20 @@ public class MainActivity extends Activity implements AdapterView.OnItemClickLis
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        DetailActivity.pos = position;
         Intent detailPass = new Intent(this, DetailActivity.class);
+        String item = itemArray.get(position);
+        String carr = carrArray.get(position);
+        String trk = trkArray.get(position);
+        String dat = datArray.get(position);
+        detailPass.putExtra("item", item);
+        detailPass.putExtra("carr", carr);
+        detailPass.putExtra("trk", trk);
+        detailPass.putExtra("dat", dat);
 
         startActivity(detailPass);
 
 
     }
-
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -132,6 +135,10 @@ public class MainActivity extends Activity implements AdapterView.OnItemClickLis
         int id = item.getItemId();
         if (id == R.id.add) {
             Intent addNew = new Intent(this, FormActivity.class);
+            addNew.putExtra("item", itemArray);
+            addNew.putExtra("carr", carrArray);
+            addNew.putExtra("trk", trkArray);
+            addNew.putExtra("dat", datArray);
             Log.i("TAPPED OUT", "Reaching For Me");
             this.startActivity(addNew);
         }
