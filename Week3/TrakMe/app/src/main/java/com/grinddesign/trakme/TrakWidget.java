@@ -22,6 +22,9 @@ public class TrakWidget extends AppWidgetProvider {
 
     //ArrayList itemArray = tracker.getItem();
 
+    public static final String ACTION_VIEW_DETAILS = "com.grinddesign.trakme.ACTION_VIEW_DETAILS";
+    public static final String EXTRA_ITEM = "com.grinddesign.trakme.TrakWidget.EXTRA_ITEM";
+
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         // There may be multiple widgets active, so update all of them
@@ -89,6 +92,21 @@ public class TrakWidget extends AppWidgetProvider {
 
         // Instruct the widget manager to update the widget
         appWidgetManager.updateAppWidget(appWidgetId, views);
+    }
+
+    @Override
+    public void onReceive(Context context, Intent intent) {
+
+        if(intent.getAction().equals(ACTION_VIEW_DETAILS)) {
+            String str = (String)intent.getSerializableExtra(EXTRA_ITEM);
+            if(str != null) {
+                Intent details = new Intent(context, TrakWidget.class);
+                details.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.startActivity(details);
+            }
+        }
+
+        super.onReceive(context, intent);
     }
 }
 

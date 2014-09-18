@@ -19,7 +19,7 @@ public class DetailActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fragment_detail);
 
-        itemName = (TextView) findViewById(R.id.textView);
+        itemName = (TextView) findViewById(R.id.cellText);
         carr = (TextView) findViewById(R.id.textView5);
         trk = (TextView) findViewById(R.id.textView6);
         est = (TextView) findViewById(R.id.textView7);

@@ -57,7 +57,6 @@ public class MainActivity extends Activity implements AdapterView.OnItemClickLis
             tracker = (Tracker) ois.readObject();
             Log.i("read", String.valueOf(tracker));
             itemArray = tracker.getItem();
-            TrakMeRemoteViewsFactory.arr = (itemArray);
             carrArray = tracker.getCarrier();
             trkArray = tracker.getTracking();
             datArray = tracker.getDat();
@@ -76,7 +75,7 @@ public class MainActivity extends Activity implements AdapterView.OnItemClickLis
             e.printStackTrace();
         }
 
-        //MainActivity.mainListAdapter.notifyDataSetChanged();
+        //mainListAdapter.notifyDataSetChanged();
 
         if( savedInstanceState != null ) {
 

@@ -8,6 +8,7 @@ import android.util.Log;
 import android.widget.ListView;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
+import android.widget.TextView;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -26,40 +27,42 @@ import java.util.ArrayList;
 public class TrakMeRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
 
     private static final int ID_CONSTANT = 0x0101010;
-
     Tracker tracker;
-    private ArrayList<String> itemsArray = new ArrayList<String>();
-    public static ArrayList<String> arr;
-
-    private Context context = null;
+    private ArrayList<String> itemsArray;
+    private ArrayList<ItemName> mItems;
+    private Context context;
     private int appWidgetId;
 
     public TrakMeRemoteViewsFactory(Context context, Intent intent) {
-        context = context;
         this.context = context;
         appWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,
                 AppWidgetManager.INVALID_APPWIDGET_ID);
+        itemsArray = new ArrayList<String>();
+;        mItems = new ArrayList<ItemName>();
+    }
 
-
-
+    @Override
+    public void onCreate() {
+        populateListItem();
 
     }
 
+
     private void populateListItem() {
         try {
-            Log.i("step", "1");
+            Log.i("step", "Widget 1");
             FileInputStream fis = context.openFileInput("items.dat");
-            Log.i("step", "2");
+            Log.i("step", "Widget 2");
             ObjectInputStream ois = new ObjectInputStream(fis);
-            Log.i("read", "trying to read saved file");
+            Log.i("read", "Widget trying to read saved file");
 
             tracker = (Tracker) ois.readObject();
             Log.i("read", String.valueOf(tracker));
             itemsArray = tracker.getItem();
-
-
-
-
+            Log.i("WIDGET", itemsArray.toString());
+            for(int i = 0; i < itemsArray.size(); i++) {
+                mItems.add(new ItemName(itemsArray.get(i)));
+            }
             ois.close();
             //MainActivity.mainListAdapter.notifyDataSetChanged();
         } catch (IOException e) {
@@ -78,7 +81,7 @@ public class TrakMeRemoteViewsFactory implements RemoteViewsService.RemoteViewsF
 
     @Override
     public long getItemId(int position) {
-        return position;
+        return ID_CONSTANT + position;
     }
 
     /*
@@ -88,17 +91,20 @@ public class TrakMeRemoteViewsFactory implements RemoteViewsService.RemoteViewsF
     */
     @Override
     public RemoteViews getViewAt(int position) {
-        final RemoteViews remoteView = new RemoteViews(
-                context.getPackageName(), R.layout.trak_widget);
-        String str = (String) itemsArray.get(position);
-        remoteView.setTextViewText(R.id.listView, str);
+
+        Log.i("WIDGET", "Test1");
+        ItemName item = mItems.get(position);
+        Log.i("WIDGET", "Test2");
+        RemoteViews remoteView = new RemoteViews(
+                context.getPackageName(), R.layout.cell_item);
+        remoteView.setTextViewText(R.id.cellText, item.getItemName());
+        Log.i("WIDGET", item.getItemName());
+
+        Intent intent = new Intent();
+        intent.putExtra("item", item);
+        remoteView.setOnClickFillInIntent(R.id.cellText, intent);
 
         return remoteView;
-    }
-    @Override
-    public void onCreate() {
-        arr = new ArrayList<String>();
-        populateListItem();
     }
 
     @Override
@@ -108,7 +114,7 @@ public class TrakMeRemoteViewsFactory implements RemoteViewsService.RemoteViewsF
 
     @Override
     public void onDestroy() {
-
+        itemsArray.clear();
     }
 
 
@@ -120,13 +126,13 @@ public class TrakMeRemoteViewsFactory implements RemoteViewsService.RemoteViewsF
 
     @Override
     public int getViewTypeCount() {
-        return 0;
+        return 1;
     }
 
 
 
     @Override
     public boolean hasStableIds() {
-        return false;
+        return true;
     }
 }
