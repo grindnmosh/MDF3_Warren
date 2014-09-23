@@ -40,8 +40,8 @@ public class MainFrag extends MapFragment {
             Log.i("Names", imgNames.toString());
 
             if (i < imgNames.size()) {
-                double latitude =  imgLats.get(i);
-                double longitude = imgLongs.get(i);
+                int latitude =  imgLats.get(i);
+                int longitude = imgLongs.get(i);
                 map.addMarker(new MarkerOptions()
                         .position(new LatLng(latitude, longitude))
                         .title(imgNames.get(i)));
