@@ -14,6 +14,9 @@ public class MyActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my);
+
+        MainFrag frag = new MainFrag();
+        getFragmentManager().beginTransaction().replace(R.id.container, frag).commit();
     }
 
 
