@@ -15,6 +15,7 @@ import android.os.Environment;
 import android.provider.ContactsContract;
 import android.provider.MediaStore;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -23,11 +24,15 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 
-public class Form extends Activity implements LocationListener {
+public class Form extends Activity implements LocationListener, Serializable {
 
     private static final int REQUEST_TAKE_PICTURE = 0x01001;
     private static final int REQUEST_ENABLE_GPS = 0x02001;
@@ -45,6 +50,7 @@ public class Form extends Activity implements LocationListener {
     String imageName;
     String imageDate;
 
+
     LocationManager mManager;
 
     @Override
@@ -61,11 +67,54 @@ public class Form extends Activity implements LocationListener {
         imgDate = (TextView) findViewById(R.id.dateText);
         mManager = (LocationManager)getSystemService(LOCATION_SERVICE);
 
+        Intent intent = getIntent();
+
+        final ArrayList<String> uriStr = intent.getStringArrayListExtra("imgArr");
+        final ArrayList<String> nameStr = intent.getStringArrayListExtra("nameArr");
+        final ArrayList<String> dateStr = intent.getStringArrayListExtra("dateArr");
+        final ArrayList<Integer> latStr = intent.getIntegerArrayListExtra("latArr");
+        final ArrayList<Integer> longStr = intent.getIntegerArrayListExtra("longArr");
 
         saveButt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //create intent to pass data to load into map
+                uriStr.add(mImageUri.toString());
+                nameStr.add(imageName);
+                dateStr.add(imageDate);
+                latStr.add(Integer.parseInt(mLatitude.toString()));
+                longStr.add(Integer.parseInt(mLongitude.toString()));
+
+                try {
+                    Log.i("jObj2", "am I here");
+                    FileOutputStream fos = openFileOutput("geo.dat", MODE_PRIVATE);
+
+                    // Wrapping our file stream.
+                    Log.i("jObj2", "am I here2");
+                    ObjectOutputStream oos = new ObjectOutputStream(fos);
+
+                    // Writing the serializable object to the file
+                    Log.i("jObj2", "am I here3");
+                    GeoData geoData = new GeoData();
+                    geoData.setURI(uriStr);
+                    geoData.setImgName(nameStr);
+                    geoData.setImgDate(dateStr);
+                    geoData.setImgLat(latStr);
+                    geoData.setImgLongs(longStr);
+                    oos.writeObject(geoData);
+                    Log.i("jObj2", String.valueOf(geoData));
+
+                    // Closing our object stream which also closes the wrapped stream.
+
+                    oos.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Log.i("jObj2", "Not Doing It");
+                }
+
+                Intent load = new Intent(Form.this, MyActivity.class);
+                load.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                Log.i("TAPPED OUT", "Reaching For Me");
+                startActivity(load);
             }
         });
         cam.setOnClickListener(new View.OnClickListener() {
@@ -87,7 +136,7 @@ public class Form extends Activity implements LocationListener {
 
     private void enableGps() {
         if(mManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-            mManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 10, (android.location.LocationListener) this);
+            mManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 10, this);
 
             Location loc = mManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
             if(loc != null) {
@@ -123,7 +172,7 @@ public class Form extends Activity implements LocationListener {
     protected void onPause() {
         super.onPause();
 
-        mManager.removeUpdates((android.location.LocationListener) this);
+        mManager.removeUpdates(this);
     }
 
     @Override
