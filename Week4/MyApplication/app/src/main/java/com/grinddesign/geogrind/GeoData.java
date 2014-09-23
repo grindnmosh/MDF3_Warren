@@ -21,9 +21,9 @@ public class GeoData implements Serializable {
 
     private ArrayList<String> imgDates = new ArrayList<String>();
 
-    private ArrayList<Integer> imgLats = new ArrayList<Integer>();
+    private ArrayList<String> imgLats = new ArrayList<String>();
 
-    private ArrayList<Integer> imgLongs = new ArrayList<Integer>();
+    private ArrayList<String> imgLongs = new ArrayList<String>();
 
     private static final long serialVersionUID = 491345791112131449L;
 
@@ -45,12 +45,12 @@ public class GeoData implements Serializable {
 
     }
 
-    public void setImgLat(ArrayList<Integer> latit)
+    public void setImgLat(ArrayList<String> latit)
     {
         this.imgLats = latit;
     }
 
-    public void setImgLongs(ArrayList<Integer> longit)
+    public void setImgLongs(ArrayList<String> longit)
     {
 
         this.imgLongs = longit;
@@ -71,12 +71,12 @@ public class GeoData implements Serializable {
         return imgDates;
     }
 
-    public ArrayList<Integer> getImgLats()
+    public ArrayList<String> getImgLats()
     {
         return imgLats;
     }
 
-    public ArrayList<Integer> getImgLongs()
+    public ArrayList<String> getImgLongs()
     {
         return imgLongs;
     }

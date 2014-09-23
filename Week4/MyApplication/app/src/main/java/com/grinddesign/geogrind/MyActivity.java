@@ -14,13 +14,13 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 
-public class MyActivity extends Activity implements Serializable {
+public class MyActivity extends Activity implements Serializable, MainFrag.onItemClicked {
 
     ArrayList<String> imgURI = new ArrayList<String>();
     ArrayList<String> imgNames = new ArrayList<String>();
     ArrayList<String> imgDates = new ArrayList<String>();
-    ArrayList<Integer> imgLats = new ArrayList<Integer>();
-    ArrayList<Integer > imgLongs = new ArrayList<Integer>();
+    ArrayList<String> imgLats = new ArrayList<String>();
+    ArrayList<String > imgLongs = new ArrayList<String>();
     public static Bundle bundle = new Bundle();
 
     @Override
@@ -44,9 +44,11 @@ public class MyActivity extends Activity implements Serializable {
             imgLats = geoData.getImgLats();
             imgLongs = geoData.getImgLongs();
 
+            bundle.putStringArrayList("uri", imgURI);
             bundle.putStringArrayList("name", imgNames);
-            bundle.putIntegerArrayList("lat", imgLats);
-            bundle.putIntegerArrayList("long", imgLongs);
+            bundle.putStringArrayList("date", imgDates);
+            bundle.putStringArrayList("lat", imgLats);
+            bundle.putStringArrayList("long", imgLongs);
             MainFrag fragObj = new MainFrag();
             fragObj.setArguments(bundle);
 
@@ -89,5 +91,16 @@ public class MyActivity extends Activity implements Serializable {
             this.startActivity(addNew);
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void ItemSelected(String uri, String name, String dated, String latit, String longit) {
+        Intent detail = new Intent(this, Detail.class);
+        detail.putExtra("uri", uri);
+        detail.putExtra("name", name);
+        detail.putExtra("date", dated);
+        detail.putExtra("lat", latit);
+        detail.putExtra("long", longit);
+        this.startActivity(detail);
     }
 }

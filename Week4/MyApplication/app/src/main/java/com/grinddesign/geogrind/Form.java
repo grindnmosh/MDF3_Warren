@@ -12,12 +12,9 @@ import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.provider.ContactsContract;
 import android.provider.MediaStore;
 import android.provider.Settings;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -49,6 +46,8 @@ public class Form extends Activity implements LocationListener, Serializable {
 
     String imageName;
     String imageDate;
+    double latitude;
+    double longitude;
 
 
     LocationManager mManager;
@@ -72,17 +71,18 @@ public class Form extends Activity implements LocationListener, Serializable {
         final ArrayList<String> uriStr = intent.getStringArrayListExtra("imgArr");
         final ArrayList<String> nameStr = intent.getStringArrayListExtra("nameArr");
         final ArrayList<String> dateStr = intent.getStringArrayListExtra("dateArr");
-        final ArrayList<Integer> latStr = intent.getIntegerArrayListExtra("latArr");
-        final ArrayList<Integer> longStr = intent.getIntegerArrayListExtra("longArr");
+        final ArrayList<String> latStr = intent.getStringArrayListExtra("latArr");
+        final ArrayList<String> longStr = intent.getStringArrayListExtra("longArr");
 
         saveButt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Log.i("LATITUDE", String.valueOf(latitude));
                 uriStr.add(mImageUri.toString());
                 nameStr.add(imageName);
                 dateStr.add(imageDate);
-                latStr.add(Integer.parseInt(mLatitude.toString()));
-                longStr.add(Integer.parseInt(mLongitude.toString()));
+                latStr.add(String.valueOf(latitude));
+                longStr.add(String.valueOf(longitude));
 
                 try {
                     Log.i("jObj2", "am I here");
@@ -140,8 +140,10 @@ public class Form extends Activity implements LocationListener, Serializable {
 
             Location loc = mManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
             if(loc != null) {
-                mLatitude.setText("lat = " + loc.getLatitude());
-                mLongitude.setText("long = " + loc.getLongitude());
+                mLatitude.setText(loc.getLatitude() + "");
+                mLongitude.setText(loc.getLongitude() + "");
+                latitude = loc.getLatitude();
+                longitude = loc.getLongitude();
             }
 
         } else {
@@ -214,7 +216,7 @@ public class Form extends Activity implements LocationListener, Serializable {
         imageDate = new SimpleDateFormat("MM/dd/yyyy").format(new Date(System.currentTimeMillis()));
         File imageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
         // Creating our own folder in the default directory.
-        File appDir = new File(imageDir, "CameraExample");
+        File appDir = new File(imageDir, "GeoGrind");
         appDir.mkdirs();
         File image = new File(appDir, imageName + ".jpg");
         try {
