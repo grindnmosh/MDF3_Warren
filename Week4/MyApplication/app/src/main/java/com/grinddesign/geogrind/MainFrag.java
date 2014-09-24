@@ -64,19 +64,20 @@ public class MainFrag extends MapFragment {
             Log.i("Lattitude", imgLats.toString());
 
             for (i = 0; i < imgNames.size(); i++) {
-
+                final String str = imgURI.get(i);
                 final Double latitude = Double.parseDouble(imgLats.get(i));
                 Double longitude = Double.parseDouble(imgLongs.get(i));
                 Log.i("Lattitude", String.valueOf(latitude));
                 map.addMarker(new MarkerOptions()
-                        .position(new LatLng(latitude, longitude))
-                        .title(imgNames.get(i))
-                        .snippet(imgDates.get(i))
-                        );
+                                .position(new LatLng(latitude, longitude))
+                                .title(imgNames.get(i))
+                                .snippet(imgDates.get(i))
+                );
                 map.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
                     @Override
                     public void onInfoWindowClick(Marker marker) {
-                        String uri = marker.getTitle();
+                        String uri = str;
+                        Log.i("URI", uri);
                         String name = marker.getTitle();
                         String dated = marker.getSnippet();
                         String latit = String.valueOf(marker.getPosition().latitude);
