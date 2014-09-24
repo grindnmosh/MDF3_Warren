@@ -64,7 +64,7 @@ public class MainFrag extends MapFragment {
             Log.i("Lattitude", imgLats.toString());
 
             for (i = 0; i < imgNames.size(); i++) {
-                final String str = imgURI.get(i);
+                //final String str = imgURI.get(i);
                 final Double latitude = Double.parseDouble(imgLats.get(i));
                 Double longitude = Double.parseDouble(imgLongs.get(i));
                 Log.i("Lattitude", String.valueOf(latitude));
@@ -76,7 +76,7 @@ public class MainFrag extends MapFragment {
                 map.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
                     @Override
                     public void onInfoWindowClick(Marker marker) {
-                        String uri = str;
+                        String uri = imgURI.get(i);
                         Log.i("URI", uri);
                         String name = marker.getTitle();
                         String dated = marker.getSnippet();
