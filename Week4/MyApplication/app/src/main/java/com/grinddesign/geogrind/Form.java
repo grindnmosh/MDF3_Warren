@@ -24,6 +24,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -48,7 +49,7 @@ public class Form extends Activity implements LocationListener, Serializable {
     String imageDate;
     double latitude;
     double longitude;
-
+    ArrayList<MarkerData> marker;
 
     LocationManager mManager;
 
@@ -68,21 +69,14 @@ public class Form extends Activity implements LocationListener, Serializable {
 
         Intent intent = getIntent();
 
-        final ArrayList<String> uriStr = intent.getStringArrayListExtra("imgArr");
-        final ArrayList<String> nameStr = intent.getStringArrayListExtra("nameArr");
-        final ArrayList<String> dateStr = intent.getStringArrayListExtra("dateArr");
-        final ArrayList<String> latStr = intent.getStringArrayListExtra("latArr");
-        final ArrayList<String> longStr = intent.getStringArrayListExtra("longArr");
+
 
         saveButt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Log.i("LATITUDE", String.valueOf(latitude));
-                uriStr.add(mImageUri.toString());
-                nameStr.add(imageName);
-                dateStr.add(imageDate);
-                latStr.add(String.valueOf(latitude));
-                longStr.add(String.valueOf(longitude));
+
+
 
                 try {
                     Log.i("jObj2", "am I here");
@@ -94,15 +88,19 @@ public class Form extends Activity implements LocationListener, Serializable {
 
                     // Writing the serializable object to the file
                     Log.i("jObj2", "am I here3");
-                    GeoData geoData = new GeoData();
-                    geoData.setURI(uriStr);
-                    geoData.setImgName(nameStr);
-                    geoData.setImgDate(dateStr);
-                    geoData.setImgLat(latStr);
-                    geoData.setImgLongs(longStr);
-                    oos.writeObject(geoData);
-                    Log.i("jObj2", String.valueOf(geoData));
+                    if (marker == null) {
+                        marker = new ArrayList<MarkerData>();
+                    }
+                    double newLat = Math.round(latitude*100.0)/100.0;
+                    DecimalFormat df = new DecimalFormat("####.######");
+                    double lats = Double.parseDouble(df.format(latitude));
+                    double newLong = Math.round(latitude*100.0)/100.0;
+                    DecimalFormat df2 = new DecimalFormat("####.######");
+                    double longs = Double.parseDouble(df.format(longitude));
 
+                    marker.add(new MarkerData(String.valueOf(mImageUri), imageName, imageDate, String.valueOf(lats), String.valueOf(longs)));
+                    Log.i("jObj2", String.valueOf(marker));
+                    oos.writeObject(marker);
                     // Closing our object stream which also closes the wrapped stream.
 
                     oos.close();

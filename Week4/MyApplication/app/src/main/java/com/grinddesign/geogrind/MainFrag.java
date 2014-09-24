@@ -2,16 +2,9 @@ package com.grinddesign.geogrind;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
-import android.graphics.BitmapFactory;
-import android.net.Uri;
+
 import android.os.Bundle;
-import android.app.Fragment;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -20,26 +13,27 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import org.json.JSONException;
 
-import java.net.URISyntaxException;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 
-public class MainFrag extends MapFragment {
+public class MainFrag extends MapFragment implements GoogleMap.OnInfoWindowClickListener, GoogleMap.OnMapClickListener{
 
     int i;
     Context context;
-    ArrayList<String> imgURI = new ArrayList<String>();
-    ArrayList<String> imgNames = new ArrayList<String>();
-    ArrayList<String> imgDates = new ArrayList<String>();
-    ArrayList<String> imgLats = new ArrayList<String>();
-    ArrayList<String > imgLongs = new ArrayList<String>();
+    GoogleMap map;
+    ArrayList<MarkerData> mData;
+
+
 
 
     public interface onItemClicked {
 
-        void ItemSelected(String uri, String name, String dated, String latit, String longit);
+        void ItemSelected(MarkerData data);
 
     }
 
@@ -49,48 +43,43 @@ public class MainFrag extends MapFragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        GoogleMap map = getMap();
-        if (MyActivity.bundle.getStringArrayList("name") != null) {
-            imgURI = MyActivity.bundle.getStringArrayList("uri");
-            imgNames = MyActivity.bundle.getStringArrayList("name");
-            imgDates = MyActivity.bundle.getStringArrayList("date");
-            Log.i("NAMES", imgNames.toString());
-            imgLats = MyActivity.bundle.getStringArrayList("lat");
-            imgLongs = MyActivity.bundle.getStringArrayList("long");
+        map = getMap();
 
+        mData = new ArrayList<MarkerData>();
+        try {
+            Log.i("step", "1");
+            FileInputStream fis = getActivity().openFileInput("geo.dat");
+            Log.i("step", "2");
+            ObjectInputStream ois = new ObjectInputStream(fis);
+            Log.i("read", "trying to read saved file");
 
-
-            Log.i("Names", imgNames.toString());
-            Log.i("Lattitude", imgLats.toString());
-
-            for (i = 0; i < imgNames.size(); i++) {
-                //final String str = imgURI.get(i);
-                final Double latitude = Double.parseDouble(imgLats.get(i));
-                Double longitude = Double.parseDouble(imgLongs.get(i));
-                Log.i("Lattitude", String.valueOf(latitude));
-                map.addMarker(new MarkerOptions()
-                                .position(new LatLng(latitude, longitude))
-                                .title(imgNames.get(i))
-                                .snippet(imgDates.get(i))
-                );
-                map.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
-                    @Override
-                    public void onInfoWindowClick(Marker marker) {
-                        String uri = imgURI.get(i -1);
-                        Log.i("URI", uri);
-                        String name = marker.getTitle();
-                        String dated = marker.getSnippet();
-                        String latit = String.valueOf(marker.getPosition().latitude);
-                        String longit = String.valueOf(marker.getPosition().longitude);
-                        parentActivity.ItemSelected(uri, name, dated, latit, longit);
-
-                    }
-                });
-            }
-
+            mData = (ArrayList<MarkerData>) ois.readObject();
+            Log.i("read", String.valueOf(mData));
+            ois.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
         }
 
-        map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(33.40777455, -111.67087746), 12));
+
+        for (i = 0; i < mData.size(); i++) {
+            if (mData != null) {
+                MarkerData data = mData.get(i);
+                Double latitude = Double.parseDouble(data.getLatit());
+                Double longitude = Double.parseDouble(data.getLongit());
+                map.addMarker(new MarkerOptions()
+                        .position(new LatLng(latitude, longitude))
+                        .title(data.getNamed()));
+                Log.i("LATITUDE", data.getLatit());
+            }
+        }
+        if (map != null) {
+            map.setOnInfoWindowClickListener(this);
+            map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(33.40777455, -111.67087746), 12));
+        }
+
+
     }
 
 
@@ -111,6 +100,38 @@ public class MainFrag extends MapFragment {
     @Override
     public void onDetach() {
         super.onDetach();
+    }
+
+    @Override
+    public void onInfoWindowClick(Marker marker) {
+
+        double latitude = marker.getPosition().latitude;
+        double newLat = Math.round(latitude*100.0)/100.0;
+        DecimalFormat df = new DecimalFormat("####.######");
+
+        double longitude = marker.getPosition().longitude;
+        double newLong = Math.round(latitude*100.0)/100.0;
+        DecimalFormat df2 = new DecimalFormat("####.######");
+        Log.i("FFFFFFFFFFFF", String.valueOf(df.format(latitude)));
+
+        for (i = 0; i < mData.size(); i++) {
+
+            MarkerData data = mData.get(i);
+            double markerLat = Double.parseDouble(data.getLatit());
+            double markerLong = Double.parseDouble(data.getLongit());
+            Log.i("FFFFFFFFFFFF", String.valueOf(markerLat));
+            if (Double.compare(markerLat, Double.parseDouble(df.format(latitude))) == 0 && Double.compare(markerLong, Double.parseDouble(df2.format(longitude))) == 0) {
+
+                parentActivity.ItemSelected(data);
+
+            }
+        }
+
+    }
+
+    @Override
+    public void onMapClick(LatLng latLng) {
+
     }
 
 

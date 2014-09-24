@@ -2,6 +2,7 @@ package com.grinddesign.geogrind;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -16,18 +17,14 @@ import java.util.ArrayList;
 
 public class MyActivity extends Activity implements Serializable, MainFrag.onItemClicked {
 
-    ArrayList<String> imgURI = new ArrayList<String>();
-    ArrayList<String> imgNames = new ArrayList<String>();
-    ArrayList<String> imgDates = new ArrayList<String>();
-    ArrayList<String> imgLats = new ArrayList<String>();
-    ArrayList<String > imgLongs = new ArrayList<String>();
+    ArrayList<MarkerData> marker;
+
     public static Bundle bundle = new Bundle();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my);
-        GeoData geoData = new GeoData();
 
         try {
             Log.i("step", "1");
@@ -36,21 +33,11 @@ public class MyActivity extends Activity implements Serializable, MainFrag.onIte
             ObjectInputStream ois = new ObjectInputStream(fis);
             Log.i("read", "trying to read saved file");
 
-            geoData = (GeoData) ois.readObject();
-            Log.i("read", String.valueOf(geoData));
-            imgURI = geoData.getURI();
-            imgNames = geoData.getImgName();
-            imgDates = geoData.getImgDates();
-            imgLats = geoData.getImgLats();
-            imgLongs = geoData.getImgLongs();
-
-            bundle.putStringArrayList("uri", imgURI);
-            bundle.putStringArrayList("name", imgNames);
-            bundle.putStringArrayList("date", imgDates);
-            bundle.putStringArrayList("lat", imgLats);
-            bundle.putStringArrayList("long", imgLongs);
-            MainFrag fragObj = new MainFrag();
-            fragObj.setArguments(bundle);
+            marker = (ArrayList<MarkerData>) ois.readObject();
+            Log.i("read", String.valueOf(marker));
+            if (marker == null) {
+                marker = new ArrayList<MarkerData>();
+            }
 
             ois.close();
         } catch (IOException e) {
@@ -83,24 +70,22 @@ public class MyActivity extends Activity implements Serializable, MainFrag.onIte
         int id = item.getItemId();
         if (id == R.id.add) {
             Intent addNew = new Intent(this, Form.class);
-            addNew.putExtra("imgArr", imgURI);
-            addNew.putExtra("nameArr", imgNames);
-            addNew.putExtra("dateArr", imgDates);
-            addNew.putExtra("latArr", imgLats);
-            addNew.putExtra("longArr", imgLongs);
             this.startActivity(addNew);
         }
         return super.onOptionsItemSelected(item);
     }
 
     @Override
-    public void ItemSelected(String uri, String name, String dated, String latit, String longit) {
+    public void ItemSelected(MarkerData data) {
+        Log.i("DATADATADATA", String.valueOf(data));
         Intent detail = new Intent(this, Detail.class);
-        detail.putExtra("uri", uri);
-        detail.putExtra("name", name);
-        detail.putExtra("date", dated);
-        detail.putExtra("lat", latit);
-        detail.putExtra("long", longit);
+        Uri uri = Uri.parse(data.getUri());
+        detail.putExtra("data", uri);
+        Log.i("IMAGE", data.getUri());
+        detail.putExtra("name", data.getNamed());
+        detail.putExtra("date", data.getDat());
+        detail.putExtra("lat", data.getLatit());
+        detail.putExtra("long", data.getLongit());
         this.startActivity(detail);
     }
 }

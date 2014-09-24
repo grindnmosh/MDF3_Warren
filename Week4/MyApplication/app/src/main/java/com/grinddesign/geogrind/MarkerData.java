@@ -1,5 +1,6 @@
 package com.grinddesign.geogrind;
 
+import java.io.Serializable;
 import java.security.PublicKey;
 
 /**
@@ -11,7 +12,7 @@ import java.security.PublicKey;
  * <p/>
  * Purpose:
  */
-public class MarkerData {
+public class MarkerData implements Serializable {
 
     private String uri;
     private String named;
