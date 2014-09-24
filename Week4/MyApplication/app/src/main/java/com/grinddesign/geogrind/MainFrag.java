@@ -76,7 +76,7 @@ public class MainFrag extends MapFragment {
                 map.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
                     @Override
                     public void onInfoWindowClick(Marker marker) {
-                        String uri = imgURI.get(i);
+                        String uri = imgURI.get(i -1);
                         Log.i("URI", uri);
                         String name = marker.getTitle();
                         String dated = marker.getSnippet();
