@@ -21,7 +21,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.text.DecimalFormat;
@@ -58,7 +61,7 @@ public class Form extends Activity implements LocationListener, Serializable {
     String imageDate;
     double latitude;
     double longitude;
-    ArrayList<MarkerData> marker;
+    ArrayList<MarkerData> mData;
 
     LocationManager mManager;
 
@@ -85,6 +88,27 @@ public class Form extends Activity implements LocationListener, Serializable {
             public void onClick(View v) {
                 Log.i("LATITUDE", String.valueOf(latitude));
 
+                try {
+                    Log.i("step", "1");
+                    FileInputStream fis = openFileInput("geo.dat");
+                    Log.i("step", "2");
+                    ObjectInputStream ois = new ObjectInputStream(fis);
+                    Log.i("read", "trying to read saved file");
+                    if (mData == null) {
+                        mData = new ArrayList<MarkerData>();
+                        Log.i("TEST", "TEST");
+                    }
+                    mData = (ArrayList<MarkerData>) ois.readObject();
+                    Log.i("read", String.valueOf(mData));
+
+
+
+                    ois.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
 
                 try {
                     Log.i("jObj2", "am I here");
@@ -96,8 +120,8 @@ public class Form extends Activity implements LocationListener, Serializable {
 
                     // Writing the serializable object to the file
                     Log.i("jObj2", "am I here3");
-                    if (marker == null) {
-                        marker = new ArrayList<MarkerData>();
+                    if (mData == null) {
+                        mData = new ArrayList<MarkerData>();
                     }
                     double newLat = Math.round(latitude * 100.0) / 100.0;
                     DecimalFormat df = new DecimalFormat("####.######");
@@ -106,9 +130,9 @@ public class Form extends Activity implements LocationListener, Serializable {
                     DecimalFormat df2 = new DecimalFormat("####.######");
                     double longs = Double.parseDouble(df.format(longitude));
 
-                    marker.add(new MarkerData(String.valueOf(mImageUri), imageName, imageDate, String.valueOf(lats), String.valueOf(longs)));
-                    Log.i("jObj2", String.valueOf(marker));
-                    oos.writeObject(marker);
+                    mData.add(new MarkerData(String.valueOf(mImageUri), imageName, imageDate, String.valueOf(lats), String.valueOf(longs)));
+                    Log.i("jObj2", String.valueOf(mData));
+                    oos.writeObject(mData);
                     // Closing our object stream which also closes the wrapped stream.
 
                     oos.close();
