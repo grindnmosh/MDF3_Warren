@@ -31,7 +31,7 @@ public class MarkerData {
         return uri;
     }
 
-    public void setUri(String uri) {dded base for custom object
+    public void setUri(String uri) {
 
         this.uri = uri;
     }
