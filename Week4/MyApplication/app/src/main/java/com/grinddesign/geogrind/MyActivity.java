@@ -14,43 +14,28 @@ import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+/**
+ * Author:  Robert Warren
+ * <p/>
+ * Project:  MDF3
+ * <p/>
+ * Package: com.grinddesign.geogrind
+ * <p/>
+ * Purpose:
+ */
 
 public class MyActivity extends Activity implements Serializable, MainFrag.onItemClicked {
 
-    ArrayList<MarkerData> marker;
+    ArrayList<MarkerData> mData;
 
-    public static Bundle bundle = new Bundle();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my);
 
-        try {
-            Log.i("step", "1");
-            FileInputStream fis = openFileInput("geo.dat");
-            Log.i("step", "2");
-            ObjectInputStream ois = new ObjectInputStream(fis);
-            Log.i("read", "trying to read saved file");
-
-            marker = (ArrayList<MarkerData>) ois.readObject();
-            Log.i("read", String.valueOf(marker));
-            if (marker == null) {
-                marker = new ArrayList<MarkerData>();
-            }
-
-            ois.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-
         MainFrag frag = new MainFrag();
         getFragmentManager().beginTransaction().replace(R.id.container, frag).commit();
-
-
-
 
     }
 
@@ -79,8 +64,7 @@ public class MyActivity extends Activity implements Serializable, MainFrag.onIte
     public void ItemSelected(MarkerData data) {
         Log.i("DATADATADATA", String.valueOf(data));
         Intent detail = new Intent(this, Detail.class);
-        Uri uri = Uri.parse(data.getUri());
-        detail.putExtra("data", uri);
+        detail.putExtra("uri", data.getUri());
         Log.i("IMAGE", data.getUri());
         detail.putExtra("name", data.getNamed());
         detail.putExtra("date", data.getDat());

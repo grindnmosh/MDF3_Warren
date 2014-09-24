@@ -29,6 +29,15 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
+/**
+ * Author:  Robert Warren
+ * <p/>
+ * Project:  MDF3
+ * <p/>
+ * Package: com.grinddesign.geogrind
+ * <p/>
+ * Purpose:
+ */
 
 public class Form extends Activity implements LocationListener, Serializable {
 
@@ -67,7 +76,7 @@ public class Form extends Activity implements LocationListener, Serializable {
         imgDate = (TextView) findViewById(R.id.dateText);
         mManager = (LocationManager)getSystemService(LOCATION_SERVICE);
 
-        Intent intent = getIntent();
+
 
 
 
@@ -75,7 +84,6 @@ public class Form extends Activity implements LocationListener, Serializable {
             @Override
             public void onClick(View v) {
                 Log.i("LATITUDE", String.valueOf(latitude));
-
 
 
                 try {
@@ -91,10 +99,10 @@ public class Form extends Activity implements LocationListener, Serializable {
                     if (marker == null) {
                         marker = new ArrayList<MarkerData>();
                     }
-                    double newLat = Math.round(latitude*100.0)/100.0;
+                    double newLat = Math.round(latitude * 100.0) / 100.0;
                     DecimalFormat df = new DecimalFormat("####.######");
                     double lats = Double.parseDouble(df.format(latitude));
-                    double newLong = Math.round(latitude*100.0)/100.0;
+                    double newLong = Math.round(latitude * 100.0) / 100.0;
                     DecimalFormat df2 = new DecimalFormat("####.######");
                     double longs = Double.parseDouble(df.format(longitude));
 

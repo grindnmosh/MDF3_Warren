@@ -11,6 +11,15 @@ import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+/**
+ * Author:  Robert Warren
+ * <p/>
+ * Project:  MDF3
+ * <p/>
+ * Package: com.grinddesign.geogrind
+ * <p/>
+ * Purpose:
+ */
 
 public class Detail extends Activity {
 
@@ -32,8 +41,9 @@ public class Detail extends Activity {
         longit = (TextView) findViewById(R.id.longitude);
 
         Intent intent = getIntent();
-        //Uri uri = Uri.parse(intent.getStringExtra("uri"));
-        //img.setImageBitmap(BitmapFactory.decodeFile(uri.getPath()));
+        Log.i("IMAGE2", intent.getStringExtra("uri"));
+        Uri uri = Uri.parse(intent.getStringExtra("uri"));
+        img.setImageBitmap(BitmapFactory.decodeFile(uri.getPath()));
         name.setText(intent.getStringExtra("name"));
         dateMe.setText(intent.getStringExtra("date"));
         latit.setText(intent.getStringExtra("lat"));
