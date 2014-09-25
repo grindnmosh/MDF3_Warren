@@ -68,7 +68,7 @@ public class Form extends Activity implements LocationListener, Serializable {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.fragment_form);
+        setContentView(R.layout.activity_form);
 
         cam = (Button) findViewById(R.id.camera);
         saveButt = (Button) findViewById(R.id.saveMe);
@@ -83,7 +83,70 @@ public class Form extends Activity implements LocationListener, Serializable {
 
 
 
+        saveButt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.i("LATITUDE", String.valueOf(latitude));
 
+                try {
+                    Log.i("step", "1");
+                    FileInputStream fis = openFileInput("geo.dat");
+                    Log.i("step", "2");
+                    ObjectInputStream ois = new ObjectInputStream(fis);
+                    Log.i("read", "trying to read saved file");
+                    if (mData == null) {
+                        mData = new ArrayList<MarkerData>();
+                        Log.i("TEST", "TEST");
+                    }
+                    mData = (ArrayList<MarkerData>) ois.readObject();
+                    Log.i("read", String.valueOf(mData));
+
+
+
+                    ois.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
+
+                try {
+                    Log.i("jObj2", "am I here");
+                    FileOutputStream fos = openFileOutput("geo.dat", MODE_PRIVATE);
+
+                    // Wrapping our file stream.
+                    Log.i("jObj2", "am I here2");
+                    ObjectOutputStream oos = new ObjectOutputStream(fos);
+
+                    // Writing the serializable object to the file
+                    Log.i("jObj2", "am I here3");
+                    if (mData == null) {
+                        mData = new ArrayList<MarkerData>();
+                    }
+                    double newLat = Math.round(latitude * 100.0) / 100.0;
+                    DecimalFormat df = new DecimalFormat("####.######");
+                    double lats = Double.parseDouble(df.format(latitude));
+                    double newLong = Math.round(latitude * 100.0) / 100.0;
+                    DecimalFormat df2 = new DecimalFormat("####.######");
+                    double longs = Double.parseDouble(df.format(longitude));
+
+                    mData.add(new MarkerData(String.valueOf(mImageUri), imageName, imageDate, String.valueOf(lats), String.valueOf(longs)));
+                    Log.i("jObj2", String.valueOf(mData));
+                    oos.writeObject(mData);
+                    // Closing our object stream which also closes the wrapped stream.
+
+                    oos.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Log.i("jObj2", "Not Doing It");
+                }
+
+                Intent load = new Intent(Form.this, MyActivity.class);
+                load.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                Log.i("TAPPED OUT", "Reaching For Me");
+                startActivity(load);
+            }
+        });
         cam.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

@@ -72,7 +72,4 @@ public class MyActivity extends Activity implements Serializable, MainFrag.onIte
         detail.putExtra("long", data.getLongit());
         this.startActivity(detail);
     }
-
-
-
 }
