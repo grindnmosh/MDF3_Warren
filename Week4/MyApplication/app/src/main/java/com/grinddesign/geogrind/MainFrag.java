@@ -35,18 +35,20 @@ import java.util.ArrayList;
  */
 
 
-public class MainFrag extends MapFragment implements GoogleMap.OnInfoWindowClickListener, GoogleMap.OnMapClickListener, LocationListener{
+public class MainFrag extends MapFragment implements GoogleMap.OnInfoWindowClickListener, GoogleMap.OnMapClickListener, GoogleMap.OnMapLongClickListener, LocationListener{
 
     int i;
     Context context;
     GoogleMap map;
     ArrayList<MarkerData> mData;
-    LocationManager mManager;
+
+    public MainFrag() {
+    }
 
     @Override
     public void onLocationChanged(Location location) {
         CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(
-                new LatLng(location.getLatitude(), location.getLongitude()), 15);
+                new LatLng(location.getLatitude(), location.getLongitude()), 8);
         map.animateCamera(cameraUpdate);
     }
 
@@ -65,6 +67,11 @@ public class MainFrag extends MapFragment implements GoogleMap.OnInfoWindowClick
 
     }
 
+    @Override
+    public void onMapClick(LatLng latLng) {
+
+    }
+
 
     public interface onItemClicked {
 
@@ -73,6 +80,14 @@ public class MainFrag extends MapFragment implements GoogleMap.OnInfoWindowClick
     }
 
     private onItemClicked parentActivity;
+
+    /*public interface onAddItem {
+
+        void onLongPressed();
+
+    }*/
+
+    //private onAddItem parentActivity2;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -109,10 +124,11 @@ public class MainFrag extends MapFragment implements GoogleMap.OnInfoWindowClick
                 Log.i("LATITUDE", data.getLatit());
             }
         }
+        map.setOnMapLongClickListener(this);
         map.setMyLocationEnabled(true);
-        map.getUiSettings().setAllGesturesEnabled(true);
         map.getUiSettings().setMyLocationButtonEnabled(true);
         map.setOnInfoWindowClickListener(this);
+        map.setOnMapLongClickListener(this);
         map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(33.40777455, -111.67087746), 12));
     }
 
@@ -164,7 +180,7 @@ public class MainFrag extends MapFragment implements GoogleMap.OnInfoWindowClick
     }
 
     @Override
-    public void onMapClick(LatLng latLng) {
+    public void onMapLongClick(LatLng latLng) {
 
     }
 

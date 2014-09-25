@@ -32,7 +32,7 @@ public class Detail extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_detail);
+        setContentView(R.layout.fragment_detail);
 
         img = (ImageView) findViewById(R.id.savedImage);
         name = (TextView) findViewById(R.id.imageName);
